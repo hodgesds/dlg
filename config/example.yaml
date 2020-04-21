@@ -1,0 +1,50 @@
+plan:
+  name: test plan
+  executors: 1
+  stages:
+  - name: http
+    concurrent: false
+    repeat: 5
+    http:
+      count: 0
+      payload:
+        url: http://localhost:8000/
+        header:
+          Content-type:
+          - application/text
+        method: GET
+  - name: http children
+    children:
+    - name: http child
+      concurrent: false
+      repeat: 0
+      http:
+        count: 0
+        payload:
+          url: http://localhost:8000/
+          header:
+            Content-type:
+            - application/text
+          method: GET
+    concurrent: true
+    repeat: 5
+  - name: etcd
+    concurrent: false
+    repeat: 5
+    etcd:
+      endpoints:
+      - localhost:1234
+      dialTimeout: 5s
+      kv:
+      - get:
+          key: foo
+  - name: sql
+    concurrent: false
+    repeat: 5
+    sql:
+      clickhouseDSN: tcp://127.0.0.1:9000
+      maxConns: 0
+      maxIdleConns: 0
+      concurrent: false
+      payloads:
+      - exec: Select * from system.tables
