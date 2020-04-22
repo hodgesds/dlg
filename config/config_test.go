@@ -7,6 +7,7 @@ import (
 
 	"github.com/hodgesds/dlg/config/etcd"
 	"github.com/hodgesds/dlg/config/http"
+	"github.com/hodgesds/dlg/config/redis"
 	"github.com/hodgesds/dlg/config/sql"
 	"github.com/stretchr/testify/require"
 	"gopkg.in/yaml.v2"
@@ -72,10 +73,26 @@ func TestConfig(t *testing.T) {
 				Name:   "sql",
 				Repeat: 5,
 				SQL: &sql.Config{
-					ClickHouseDSN: "tcp://127.0.0.1:9000",
+					MysqlDSN: "user:password@/dbname",
 					Payloads: []*sql.Payload{
 						{
-							Exec: "Select * from system.tables",
+							Exec: "Select * from users",
+						},
+					},
+				},
+			},
+			{
+				Name:   "redis",
+				Repeat: 10,
+				Redis: &redis.Config{
+					Network: "eth1",
+					Addr:    "127.0.0.1:1234",
+					DB:      1,
+					Commands: []*redis.Command{
+						{
+							Get: &redis.Get{
+								Key: "foo",
+							},
 						},
 					},
 				},

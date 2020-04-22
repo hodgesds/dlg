@@ -20,17 +20,16 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// dnsCmd represents the dns command
-var dnsCmd = &cobra.Command{
-	Use:   "dns",
-	Short: "dns load generator",
+// redisCmd represents the redis command
+var redisCmd = &cobra.Command{
+	Use:   "redis",
+	Short: "redis load generator",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
-		// TODO: Work your own magic here
-		fmt.Println("dns called")
+		fmt.Println("redis called")
 	},
 }
 
 func init() {
-	RootCmd.AddCommand(dnsCmd)
+	RootCmd.AddCommand(redisCmd)
 }

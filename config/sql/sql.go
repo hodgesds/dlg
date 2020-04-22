@@ -37,7 +37,14 @@ func (c *Config) DB() (*gsql.DB, error) {
 
 // Payload is used for configuring a SQL payload.
 type Payload struct {
-	Exec string `yaml:"exec"`
+	Exec         string         `yaml:"exec,omitempty"`
+	Transactions []*Transaction `yaml:"transactions,omitempty"`
+}
+
+// Transaction is used for configuring a SQL transaction.
+type Transaction struct {
+	Query string `yaml:"query,omitempty"`
+	Exec  string `yaml:"exec,omitempty"`
 }
 
 // Validate is used to validate a SQL configuration.

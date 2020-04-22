@@ -42,9 +42,20 @@ plan:
     concurrent: false
     repeat: 5
     sql:
-      clickhouseDSN: tcp://127.0.0.1:9000
+      mysqlDSN: user:password@/dbname
       maxConns: 0
       maxIdleConns: 0
       concurrent: false
       payloads:
-      - exec: Select * from system.tables
+      - exec: Select * from users
+  - name: redis
+    concurrent: false
+    repeat: 10
+    redis:
+      network: eth1
+      addr: 127.0.0.1:1234
+      db: 1
+      commands:
+      - clientUnblockWithError: null
+        get:
+          key: foo
