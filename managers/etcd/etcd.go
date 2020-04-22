@@ -1,7 +1,6 @@
 package etcd
 
 import (
-	"github.com/hodgesds/dlg"
 	etcdconfig "github.com/hodgesds/dlg/config/etcd"
 	"go.etcd.io/etcd/clientv3"
 )
@@ -11,7 +10,7 @@ type etcdManager struct {
 }
 
 // NewManager returns a new manager.
-func NewManager(config *etcdconfig.Config) (dlg.Manager, error) {
+func NewManager(config *etcdconfig.Config) (*etcdManager, error) {
 	c, err := clientv3.New(clientv3.Config{
 		Endpoints:   config.Endpoints,
 		DialTimeout: config.DialTimeout,

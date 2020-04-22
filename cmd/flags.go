@@ -15,8 +15,12 @@
 package cmd
 
 import (
+	"fmt"
+	"reflect"
+	"strings"
 	"time"
 
+	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 )
 
@@ -38,4 +42,164 @@ func init() {
 	planFlags.IntVarP(&count, "count", "c", 100, "number of times to execute")
 	planFlags.DurationVarP(&dur, "duration", "d", 0, "execution duration")
 	planFlags.StringSliceVar(&tags, "tags", nil, "metrics tags")
+}
+
+func flagsFromStruct(s interface{}) (*pflag.FlagSet, error) {
+	v := reflect.ValueOf(s)
+	if v.Kind() != reflect.Ptr && v.Kind() != reflect.Struct {
+		return nil, fmt.Errorf("expected a pointer or struct got: %t", s)
+	}
+	v = reflect.Indirect(v)
+
+	nFields := v.NumField()
+	flagSet := pflag.NewFlagSet(strings.ToLower(v.Type().Name()), pflag.ContinueOnError)
+
+	for i := 0; i < nFields; i++ {
+		f := v.Field(i)
+		ind := reflect.Indirect(f)
+		if !ind.IsValid() {
+			continue
+		}
+		baseKind := ind.Kind()
+		name := ind.Type().Name()
+		isPointer := f.Kind() == reflect.Ptr
+		switch baseKind {
+		case reflect.Bool:
+			if isPointer {
+				flagSet.Bool(name, ind.Interface().(bool), "")
+				continue
+			}
+			flagSet.Bool(name, false, "")
+		case reflect.Int:
+			if isPointer {
+				flagSet.Int(name, ind.Interface().(int), "")
+				continue
+			}
+			flagSet.Int(name, 0, "")
+		case reflect.Int8:
+			// pflag doesn't support int8 or int16
+			fallthrough
+		case reflect.Int16:
+			if isPointer {
+				flagSet.Int16(name, ind.Interface().(int16), "")
+				continue
+			}
+			flagSet.Int16(name, 0, "")
+		case reflect.Int32:
+			if isPointer {
+				flagSet.Int32(name, ind.Interface().(int32), "")
+				continue
+			}
+			flagSet.Int32(name, 0, "")
+		case reflect.Int64:
+			if isPointer {
+				flagSet.Int64(name, ind.Interface().(int64), "")
+				continue
+			}
+			flagSet.Int64(name, 0, "")
+		case reflect.Uint:
+			if isPointer {
+				flagSet.Uint(name, ind.Interface().(uint), "")
+				continue
+			}
+			flagSet.Uint(name, 0, "")
+		case reflect.Uint8:
+			fallthrough
+		case reflect.Uint16:
+			if isPointer {
+				flagSet.Uint16(name, ind.Interface().(uint16), "")
+				continue
+			}
+			flagSet.Uint16(name, 0, "")
+		case reflect.Uint32:
+			if isPointer {
+				flagSet.Uint32(name, ind.Interface().(uint32), "")
+				continue
+			}
+			flagSet.Uint32(name, 0, "")
+		case reflect.Uint64:
+			if isPointer {
+				flagSet.Uint64(name, ind.Interface().(uint64), "")
+				continue
+			}
+			flagSet.Uint64(name, 0, "")
+		case reflect.Float32:
+			if isPointer {
+				flagSet.Float32(name, ind.Interface().(float32), "")
+				continue
+			}
+			flagSet.Uint32(name, 0, "")
+		case reflect.Float64:
+			if isPointer {
+				flagSet.Float64(name, ind.Interface().(float64), "")
+				continue
+			}
+			flagSet.Float64(name, 0, "")
+		case reflect.String:
+			if isPointer {
+				flagSet.String(name, ind.Interface().(string), "")
+				continue
+			}
+			flagSet.String(strings.ToLower(name), "", "name")
+		case reflect.Array:
+			continue
+		case reflect.Slice:
+			continue
+		case reflect.Struct:
+			subFlags, err := flagsFromStruct(f.Interface())
+			if err != nil {
+				return nil, err
+			}
+			flagSet.AddFlagSet(subFlags)
+		}
+		break
+	}
+
+	return flagSet, nil
+}
+
+func commandsFromStruct(s interface{}) ([]*cobra.Command, error) {
+	v := reflect.ValueOf(s)
+	if v.Kind() != reflect.Ptr && v.Kind() != reflect.Struct {
+		return nil, fmt.Errorf("expected a pointer or struct got: %t", s)
+	}
+	v = reflect.Indirect(v)
+
+	commands := []*cobra.Command{}
+
+	nFields := v.NumField()
+	for i := 0; i < nFields; i++ {
+		f := v.Field(i)
+		ind := reflect.Indirect(f)
+		baseKind := ind.Kind()
+		if !ind.IsValid() {
+			newF := reflect.New(f.Type().Elem())
+			f.Set(newF)
+			ind = reflect.Indirect(reflect.Indirect(f))
+			baseKind = ind.Kind()
+		}
+		//if baseKind != reflect.Struct && ind.CanAddr() {
+		//	ind = f.Elem()
+		//}
+		//isPointer := f.Kind() == reflect.Ptr
+		name := reflect.Indirect(ind).Type().Name()
+		fmt.Printf("%+v %+v %+v\n", f, baseKind, name)
+
+		switch baseKind {
+		case reflect.Struct:
+			flags, err := flagsFromStruct(f.Interface())
+			if err != nil {
+				return nil, err
+			}
+			cmd := &cobra.Command{
+				Use:   strings.ToLower(name),
+				Short: strings.ToLower(name),
+				Long:  ``,
+			}
+			cmd.PersistentFlags().AddFlagSet(flags)
+			commands = append(commands, cmd)
+		}
+	}
+
+	return commands, nil
 }

@@ -1,6 +1,7 @@
 package redis
 
 import (
+	"context"
 	"time"
 
 	v7 "github.com/go-redis/redis/v7"
@@ -11,6 +12,7 @@ type Config struct {
 	Network            string         `yaml:"network,omitempty"`
 	Addr               string         `yaml:"addr"`
 	DB                 int            `yaml:"db"`
+	Password           string         `yaml:"password,omitempty"`
 	PoolSize           *int           `yaml:"poolSize,omitempty"`
 	MaxRetries         *int           `yaml:"maxRetries,omitempty"`
 	MinRetryBackoff    *time.Duration `yaml:"minRetryBackoff,omitempty"`
@@ -25,11 +27,12 @@ type Config struct {
 	Commands           []*Command     `yaml:"commands"`
 }
 
-func (c *config) Execute(ctx context.Context) error {
+// Execute is used to execute the config.
+func (c *Config) Execute(ctx context.Context) error {
 	client := c.Client()
 	var err error
 	for _, command := range c.Commands {
-		switch {
+		select {
 		case <-ctx.Done():
 			return ctx.Err()
 		default:
@@ -93,12 +96,12 @@ func (c *config) Execute(ctx context.Context) error {
 				return err
 			}
 		}
-		if command.BitField != nil {
-			_, err = client.BitField(command.BitField.Key, command.BitField.Args...).Result()
-			if err != nil {
-				return err
-			}
-		}
+		//if command.BitField != nil {
+		//	_, err = client.BitField(command.BitField.Key, command.BitField.Args...).Result()
+		//	if err != nil {
+		//		return err
+		//	}
+		//}
 		if command.BitOpAnd != nil {
 			_, err = client.BitOpAnd(command.BitOpAnd.DestKey, command.BitOpAnd.Keys...).Result()
 			if err != nil {
@@ -106,7 +109,7 @@ func (c *config) Execute(ctx context.Context) error {
 			}
 		}
 		if command.BitOpNot != nil {
-			_, err = client.BitOpNot(command.BitOpNot.DestKey, command.BitOpNot.Keys...).Result()
+			_, err = client.BitOpNot(command.BitOpNot.DestKey, command.BitOpNot.Key).Result()
 			if err != nil {
 				return err
 			}
@@ -124,7 +127,7 @@ func (c *config) Execute(ctx context.Context) error {
 			}
 		}
 		if command.BitPos != nil {
-			_, err = client.BitPos(command.BitPos.Key, command.BitPos.Args).Result()
+			_, err = client.BitPos(command.BitPos.Key, command.BitPos.Bit, command.BitPos.Pos...).Result()
 			if err != nil {
 				return err
 			}
@@ -178,7 +181,7 @@ func (c *config) Execute(ctx context.Context) error {
 			}
 		}
 		if command.Close != nil {
-			_, err = client.Close().Result()
+			err = client.Close()
 			if err != nil {
 				return err
 			}
@@ -541,7 +544,7 @@ func (c *config) Execute(ctx context.Context) error {
 			}
 		}
 		if command.HScan != nil {
-			_, err = client.HScan(command.HScan.Key, command.HScan.Cursor, command.HScan.Match, command.HScan.Count).Result()
+			_, _, err = client.HScan(command.HScan.Key, command.HScan.Cursor, command.HScan.Match, command.HScan.Count).Result()
 			if err != nil {
 				return err
 			}
@@ -577,7 +580,7 @@ func (c *config) Execute(ctx context.Context) error {
 			}
 		}
 		if command.Keys != nil {
-			_, err = client.Keys(command.Key.Pattern).Result()
+			_, err = client.Keys(command.Keys.Pattern).Result()
 			if err != nil {
 				return err
 			}
@@ -685,7 +688,7 @@ func (c *config) Execute(ctx context.Context) error {
 			}
 		}
 		if command.Persist != nil {
-			_, err = client.Persist(command.Persist).Result()
+			_, err = client.Persist(command.Persist.Key).Result()
 			if err != nil {
 				return err
 			}
@@ -841,19 +844,21 @@ func (c *config) Execute(ctx context.Context) error {
 			}
 		}
 		if command.SRandMemberN != nil {
-			_, err = client.SRandMemberN(command.SRandMemberN.Key).Result()
+			_, err = client.SRandMemberN(command.SRandMemberN.Key, command.SRandMemberN.Count).Result()
 			if err != nil {
 				return err
 			}
 		}
 		if command.SRem != nil {
-			_, err = client.SRem(command.SRem.Key, command.SRem.Members...).Result()
+			_, err = client.SRem(
+				command.SRem.Key,
+				[]interface{}{command.SRem.Members}...).Result()
 			if err != nil {
 				return err
 			}
 		}
 		if command.SScan != nil {
-			_, err = client.SScan(command.SScan.Key, command.SScan.Cursor, command.SScan.Match, command.SScan.Count).Result()
+			_, _, err = client.SScan(command.SScan.Key, command.SScan.Cursor, command.SScan.Match, command.SScan.Count).Result()
 			if err != nil {
 				return err
 			}
@@ -877,7 +882,7 @@ func (c *config) Execute(ctx context.Context) error {
 			}
 		}
 		if command.Scan != nil {
-			_, err = client.Scan(command.Scan.Cursor, command.Scan.Match, command.Scan.Count).Result()
+			_, _, err = client.Scan(command.Scan.Cursor, command.Scan.Match, command.Scan.Count).Result()
 			if err != nil {
 				return err
 			}
@@ -942,12 +947,6 @@ func (c *config) Execute(ctx context.Context) error {
 				return err
 			}
 		}
-		if command.SlowLog != nil {
-			_, err = client.SlowLog().Result()
-			if err != nil {
-				return err
-			}
-		}
 		if command.Sort != nil {
 			_, err = client.Sort(command.Sort.Key, command.Sort.Sort).Result()
 			if err != nil {
@@ -962,18 +961,6 @@ func (c *config) Execute(ctx context.Context) error {
 		}
 		if command.SortStore != nil {
 			_, err = client.SortStore(command.SortStore.Key, command.SortStore.Store, command.SortStore.Sort).Result()
-			if err != nil {
-				return err
-			}
-		}
-		if command.StrLen != nil {
-			_, err = client.StrLen().Result()
-			if err != nil {
-				return err
-			}
-		}
-		if command.String != nil {
-			_, err = client.String().Result()
 			if err != nil {
 				return err
 			}
@@ -1081,7 +1068,7 @@ func (c *config) Execute(ctx context.Context) error {
 			}
 		}
 		if command.XLen != nil {
-			_, err = client.XLen(command.XLen.Key).Result()
+			_, err = client.XLen(command.XLen.Stream).Result()
 			if err != nil {
 				return err
 			}
@@ -1249,7 +1236,7 @@ func (c *config) Execute(ctx context.Context) error {
 			}
 		}
 		if command.ZRange != nil {
-			_, err = client.ZRange(command.ZRange.Key, command.ZRange.Start, command.ZRank.Stop).Result()
+			_, err = client.ZRange(command.ZRange.Key, command.ZRange.Start, command.ZRange.Stop).Result()
 			if err != nil {
 				return err
 			}
@@ -1273,7 +1260,7 @@ func (c *config) Execute(ctx context.Context) error {
 			}
 		}
 		if command.ZRangeWithScores != nil {
-			_, err = client.ZRangeWithScores(command.ZRangeWithScores.Key, command.ZRangeWithScores.Opt).Result()
+			_, err = client.ZRangeWithScores(command.ZRangeWithScores.Key, command.ZRangeWithScores.Start, command.ZRangeWithScores.Stop).Result()
 			if err != nil {
 				return err
 			}
@@ -1285,7 +1272,7 @@ func (c *config) Execute(ctx context.Context) error {
 			}
 		}
 		if command.ZRem != nil {
-			_, err = client.ZRem(command.ZRem.Key, command.ZRem.Members...).Result()
+			_, err = client.ZRem(command.ZRem.Key, []interface{}{command.ZRem.Members}...).Result()
 			if err != nil {
 				return err
 			}
@@ -1315,7 +1302,7 @@ func (c *config) Execute(ctx context.Context) error {
 			}
 		}
 		if command.ZRevRangeByLex != nil {
-			_, err = client.ZRevRangeByLex(command.ZRevRangeByLex.Key, command.ZRemRangeByLex.Opt).Result()
+			_, err = client.ZRevRangeByLex(command.ZRevRangeByLex.Key, command.ZRevRangeByLex.Opt).Result()
 			if err != nil {
 				return err
 			}
@@ -1327,7 +1314,7 @@ func (c *config) Execute(ctx context.Context) error {
 			}
 		}
 		if command.ZRevRangeByScoreWithScores != nil {
-			_, err = client.ZRevRangeWithScores(command.ZRevRangeWithScores.Key, command.ZRevRangeWithScores.Opt).Result()
+			_, err = client.ZRevRangeByScoreWithScores(command.ZRevRangeByScoreWithScores.Key, command.ZRevRangeByScoreWithScores.Opt).Result()
 			if err != nil {
 				return err
 			}
@@ -1345,7 +1332,7 @@ func (c *config) Execute(ctx context.Context) error {
 			}
 		}
 		if command.ZScan != nil {
-			_, err = client.ZScan(command.ZScan.Key, command.ZScan.Cursor, command.ZScan.Match, command.ZScan.Count).Result()
+			_, _, err = client.ZScan(command.ZScan.Key, command.ZScan.Cursor, command.ZScan.Match, command.ZScan.Count).Result()
 			if err != nil {
 				return err
 			}
@@ -1357,7 +1344,7 @@ func (c *config) Execute(ctx context.Context) error {
 			}
 		}
 		if command.ZUnionStore != nil {
-			_, err = client.ZUnionStore(command.ZUnionStore.Dest, command.ZUnionStore.Stop).Result()
+			_, err = client.ZUnionStore(command.ZUnionStore.Dest, command.ZUnionStore.Store).Result()
 			if err != nil {
 				return err
 			}
@@ -1371,9 +1358,10 @@ func (c *config) Execute(ctx context.Context) error {
 // Client returns a redis client.
 func (c *Config) Client() *v7.Client {
 	opts := &v7.Options{
-		Network: c.Network,
-		Addr:    c.Addr,
-		DB:      c.DB,
+		Network:  c.Network,
+		Addr:     c.Addr,
+		DB:       c.DB,
+		Password: c.Password,
 	}
 	if c.PoolSize != nil {
 		opts.PoolSize = *c.PoolSize
@@ -1412,158 +1400,223 @@ func (c *Config) Client() *v7.Client {
 	return v7.NewClient(opts)
 }
 
+// Append ...
 type Append struct {
 	Key   string `yaml:"key"`
 	Value string `yaml:"value"`
 }
+
+// BLPop ...
 type BLPop struct {
 	Timeout time.Duration `yaml:"timeout"`
 	Keys    []string      `yaml:"keys"`
 }
 
+// BRPop ...
 type BRPop struct {
 	Timeout time.Duration `yaml:"timeout"`
 	Keys    []string      `yaml:"keys"`
 }
+
+// BRPopLPush ...
 type BRPopLPush struct {
 	Source  string        `yaml:"source"`
 	Dest    string        `yaml:"dest"`
 	Timeout time.Duration `yaml:"timeout"`
 }
+
+// BZPopMax ...
 type BZPopMax struct {
 	Timeout time.Duration `yaml:"timeout"`
 	Keys    []string      `yaml:"keys"`
 }
+
+// BZPopMin ...
 type BZPopMin struct {
 	Timeout time.Duration `yaml:"timeout"`
 	Keys    []string      `yaml:"keys"`
 }
 
+// BitCount ...
 type BitCount struct {
 	Key      string       `yaml:"key"`
 	BitCount *v7.BitCount `yaml:"bitCount"`
 }
+
+// BitField ...
 type BitField struct {
 	Key  string   `yaml:"key"`
 	Args []string `yaml:"args"`
 }
+
+// BitOpAnd ...
 type BitOpAnd struct {
 	DestKey string   `yaml:"destKey"`
 	Keys    []string `yaml:"keys"`
 }
+
+// BitOpNot ...
 type BitOpNot struct {
 	DestKey string `yaml:"destKey"`
 	Key     string `yaml:"key"`
 }
+
+// BitOpOr ...
 type BitOpOr struct {
 	DestKey string   `yaml:"destKey"`
 	Keys    []string `yaml:"keys"`
 }
+
+// BitOpXor ...
 type BitOpXor struct {
 	DestKey string   `yaml:"destKey"`
 	Keys    []string `yaml:"keys"`
 }
+
+// BitPos ...
 type BitPos struct {
 	Key string  `yaml:"key"`
 	Bit int64   `yaml:"bit"`
 	Pos []int64 `yaml:"pos"`
 }
 
+// ClientKill ...
 type ClientKill struct {
 	IPPort string `yaml:"ipPort"`
 }
 
+// ClientKillByFilter ...
 type ClientKillByFilter struct {
 	Keys []string `yaml:"keys"`
 }
+
+// ClientPause ...
 type ClientPause struct {
 	Dur time.Duration `yaml:"dur"`
 }
 
+// ClientUnblock ...
 type ClientUnblock struct {
 	ID int64 `yaml:"id"`
 }
 
+// ClientUnblockWithError ...
 type ClientUnblockWithError struct {
 	ID int64 `yaml:"id"`
 }
+
+// ClusterAddSlots ...
 type ClusterAddSlots struct {
 	Slots []int `yaml:"slots"`
 }
 
+// ClusterAddSlotsRange ...
 type ClusterAddSlotsRange struct {
 	Min int `yaml:"min"`
 	Max int `yaml:"max"`
 }
 
+// ClusterCountFailureReports ...
 type ClusterCountFailureReports struct {
 	NodeID string `yaml:"nodeID"`
 }
 
+// ClusterCountKeysInSlot ...
 type ClusterCountKeysInSlot struct {
 	Slot int `yaml:"slot"`
 }
 
+// ClusterDelSlots ...
 type ClusterDelSlots struct {
 	Slots []int `yaml:"slots"`
 }
 
+// ClusterDelSlotsRange ...
 type ClusterDelSlotsRange struct {
 	Min int `yaml:"min"`
 	Max int `yaml:"max"`
 }
+
+// ClusterForget ...
 type ClusterForget struct {
 	NodeID string `yaml:"nodeID"`
 }
 
+// ClusterGetKeysInSlot ...
 type ClusterGetKeysInSlot struct {
 	Slot  int `yaml:"slot"`
 	Count int `yaml:"count"`
 }
 
+// ClusterKeySlot ...
 type ClusterKeySlot struct {
 	Key string `yaml:"key"`
 }
+
+// ClusterMeet ...
 type ClusterMeet struct {
 	Host string `yaml:"host"`
 	Port string `yaml:"port"`
 }
+
+// ClusterReplicate ...
 type ClusterReplicate struct {
 	NodeID string `yaml:"nodeID"`
 }
+
+// ClusterSlaves ...
 type ClusterSlaves struct {
 	NodeID string `yaml:"nodeID"`
 }
+
+// ConfigGet ...
 type ConfigGet struct {
 	Parameter string `yaml:"parameter"`
 }
+
+// ConfigSet ...
 type ConfigSet struct {
 	Parameter string `yaml:"parameter"`
 	Value     string `yaml:"value"`
 }
 
+// DebugObject ...
 type DebugObject struct {
 	Key string `yaml:"key"`
 }
+
+// Decr ...
 type Decr struct {
 	Key string `yaml:"key"`
 }
+
+// DecrBy ...
 type DecrBy struct {
 	Key       string `yaml:"key"`
 	Decrement int64  `yaml:"decrement"`
 }
+
+// Del ...
 type Del struct {
 	Keys []string `yaml:"keys"`
 }
+
+// Dump ...
 type Dump struct {
 	Key string `yaml:"key"`
 }
+
+// Echo ...
 type Echo struct {
 	Message string `yaml:"message"`
 }
+
+// Exists ...
 type Exists struct {
 	Keys []string `yaml:"keys"`
 }
+
+// Expire ...
 type Expire struct {
 	Key        string        `yaml:"key"`
 	Expiration time.Duration `yaml:"expiration"`
@@ -1573,8 +1626,8 @@ type ExpireAt struct {
 	Time time.Time `yaml:"time"`
 }
 type GeoAdd struct {
-	Key         string           `yaml:"key"`
-	GeoLocation []v7.GeoLocation `yaml:"geoLocation"`
+	Key         string            `yaml:"key"`
+	GeoLocation []*v7.GeoLocation `yaml:"geoLocation"`
 }
 
 type GeoDist struct {
@@ -1600,21 +1653,21 @@ type GeoRadius struct {
 	Query     v7.GeoRadiusQuery `yaml:"query"`
 }
 type GeoRadiusByMember struct {
-	Key    string            `yaml:"key"`
-	Member string            `yaml:"member"`
-	Query  v7.GeoRadiusQuery `yaml:"query"`
+	Key    string             `yaml:"key"`
+	Member string             `yaml:"member"`
+	Query  *v7.GeoRadiusQuery `yaml:"query"`
 }
 
 type GeoRadiusByMemberStore struct {
-	Key    string            `yaml:"key"`
-	Member string            `yaml:"member"`
-	Query  v7.GeoRadiusQuery `yaml:"query"`
+	Key    string             `yaml:"key"`
+	Member string             `yaml:"member"`
+	Query  *v7.GeoRadiusQuery `yaml:"query"`
 }
 type GeoRadiusStore struct {
-	Key       string            `yaml:"key"`
-	Longitude float64           `yaml:"longitude"`
-	Latitude  float64           `yaml:"latitude"`
-	Query     v7.GeoRadiusQuery `yaml:"query"`
+	Key       string             `yaml:"key"`
+	Longitude float64            `yaml:"longitude"`
+	Latitude  float64            `yaml:"latitude"`
+	Query     *v7.GeoRadiusQuery `yaml:"query"`
 }
 
 type Get struct {
@@ -1905,17 +1958,17 @@ type SlaveOf struct {
 	Port string `yaml:"port"`
 }
 type Sort struct {
-	Key  string  `yaml:"key"`
-	Sort v7.Sort `yaml:"sort"`
+	Key  string   `yaml:"key"`
+	Sort *v7.Sort `yaml:"sort"`
 }
 type SortInterfaces struct {
-	Key  string  `yaml:"key"`
-	Sort v7.Sort `yaml:"sort"`
+	Key  string   `yaml:"key"`
+	Sort *v7.Sort `yaml:"sort"`
 }
 type SortStore struct {
-	Key   string  `yaml:"key"`
-	Store string  `yaml:"store"`
-	Sort  v7.Sort `yaml:"sort"`
+	Key   string   `yaml:"key"`
+	Store string   `yaml:"store"`
+	Sort  *v7.Sort `yaml:"sort"`
 }
 type StrLen struct {
 	Key string `yaml:"key"`
@@ -1943,13 +1996,13 @@ type XAck struct {
 }
 
 type XAdd struct {
-	A v7.XAddArgs `yaml:"a"`
+	A *v7.XAddArgs `yaml:"a"`
 }
 type XClaim struct {
-	A v7.XClaimArgs `yaml:"a"`
+	A *v7.XClaimArgs `yaml:"a"`
 }
 type XClaimJustID struct {
-	A v7.XClaimArgs `yaml:"a"`
+	A *v7.XClaimArgs `yaml:"a"`
 }
 type XDel struct {
 	Stream string   `yaml:"stream"`
@@ -1991,7 +2044,7 @@ type XPending struct {
 	Group  string `yaml:"group"`
 }
 type XPendingExt struct {
-	A v7.XPendingExtArgs `yaml:"a"`
+	A *v7.XPendingExtArgs `yaml:"a"`
 }
 type XRange struct {
 	Stream string `yaml:"stream"`
@@ -2006,10 +2059,10 @@ type XRangeN struct {
 	Count  int64  `yaml:"count"`
 }
 type XRead struct {
-	A v7.XReadArgs `yaml:"a"`
+	A *v7.XReadArgs `yaml:"a"`
 }
 type XReadGroup struct {
-	A v7.XReadGroupArgs `yaml:"a"`
+	A *v7.XReadGroupArgs `yaml:"a"`
 }
 type XReadStreams struct {
 	Streams []string `yaml:"streams"`
@@ -2034,29 +2087,29 @@ type XTrimApprox struct {
 	MaxLen int64  `yaml:"maxLen"`
 }
 type ZAdd struct {
-	Key     string `yaml:"key"`
-	Members []v7.Z `yaml:"members"`
+	Key     string  `yaml:"key"`
+	Members []*v7.Z `yaml:"members"`
 }
 type ZAddCh struct {
-	Key     string `yaml:"key"`
-	Members []v7.Z `yaml:"members"`
+	Key     string  `yaml:"key"`
+	Members []*v7.Z `yaml:"members"`
 }
 type ZAddNX struct {
-	Key     string `yaml:"key"`
-	Members []v7.Z `yaml:"members"`
+	Key     string  `yaml:"key"`
+	Members []*v7.Z `yaml:"members"`
 }
 type ZAddNXCh struct {
-	Key     string `yaml:"key"`
-	Members []v7.Z `yaml:"members"`
+	Key     string  `yaml:"key"`
+	Members []*v7.Z `yaml:"members"`
 }
 type ZAddXX struct {
-	Key     string `yaml:"key"`
-	Members []v7.Z `yaml:"members"`
+	Key     string  `yaml:"key"`
+	Members []*v7.Z `yaml:"members"`
 }
 
 type ZAddXXCh struct {
-	Key     string `yaml:"key"`
-	Members []v7.Z `yaml:"members"`
+	Key     string  `yaml:"key"`
+	Members []*v7.Z `yaml:"members"`
 }
 type ZCard struct {
 	Key string `yaml:"key"`
@@ -2068,7 +2121,7 @@ type ZCount struct {
 }
 type ZIncr struct {
 	Key    string `yaml:"key"`
-	Member v7.Z   `yaml:"member"`
+	Member *v7.Z  `yaml:"member"`
 }
 type ZIncrBy struct {
 	Key       string  `yaml:"key"`
@@ -2077,15 +2130,15 @@ type ZIncrBy struct {
 }
 type ZIncrNX struct {
 	Key    string `yaml:"key"`
-	Member v7.Z   `yaml:"member"`
+	Member *v7.Z  `yaml:"member"`
 }
 type ZIncrXX struct {
 	Key    string `yaml:"key"`
-	Member v7.Z   `yaml:"member"`
+	Member *v7.Z  `yaml:"member"`
 }
 type ZInterStore struct {
-	Destination string    `yaml:"destination"`
-	Store       v7.ZStore `yaml:"store"`
+	Destination string     `yaml:"destination"`
+	Store       *v7.ZStore `yaml:"store"`
 }
 
 type ZLexCount struct {
@@ -2107,16 +2160,16 @@ type ZRange struct {
 	Stop  int64  `yaml:"stop"`
 }
 type ZRangeByLex struct {
-	Key string      `yaml:"key"`
-	Opt v7.ZRangeBy `yaml:"opt"`
+	Key string       `yaml:"key"`
+	Opt *v7.ZRangeBy `yaml:"opt"`
 }
 type ZRangeByScore struct {
-	Key string      `yaml:"key"`
-	Opt v7.ZRangeBy `yaml:"opt"`
+	Key string       `yaml:"key"`
+	Opt *v7.ZRangeBy `yaml:"opt"`
 }
 type ZRangeByScoreWithScores struct {
-	Key string      `yaml:"key"`
-	Opt v7.ZRangeBy `yaml:"opt"`
+	Key string       `yaml:"key"`
+	Opt *v7.ZRangeBy `yaml:"opt"`
 }
 type ZRangeWithScores struct {
 	Key   string `yaml:"key"`
@@ -2148,21 +2201,21 @@ type ZRemRangeByScore struct {
 }
 type ZRevRange struct {
 	Key   string `yaml:"key"`
-	Start string `yaml:"start"`
+	Start int64  `yaml:"start"`
 	Stop  int64  `yaml:"stop"`
 }
 type ZRevRangeByLex struct {
-	Key string      `yaml:"key"`
-	Opt v7.ZRangeBy `yaml:"opt"`
+	Key string       `yaml:"key"`
+	Opt *v7.ZRangeBy `yaml:"opt"`
 }
 
 type ZRevRangeByScore struct {
-	Key string      `yaml:"key"`
-	Opt v7.ZRangeBy `yaml:"opt"`
+	Key string       `yaml:"key"`
+	Opt *v7.ZRangeBy `yaml:"opt"`
 }
 type ZRevRangeByScoreWithScores struct {
-	Key string      `yaml:"key"`
-	Opt v7.ZRangeBy `yaml:"opt"`
+	Key string       `yaml:"key"`
+	Opt *v7.ZRangeBy `yaml:"opt"`
 }
 type ZRevRangeWithScores struct {
 	Key   string `yaml:"key"`
@@ -2185,8 +2238,8 @@ type ZScore struct {
 }
 
 type ZUnionStore struct {
-	Dest  string    `yaml:"dest"`
-	Store v7.ZStore `yaml:"store"`
+	Dest  string     `yaml:"dest"`
+	Store *v7.ZStore `yaml:"store"`
 }
 
 // Command is a Redis command.
@@ -2254,12 +2307,12 @@ type Command struct {
 	FlushDB                    *bool                       `yaml:"flushDB,omitempty"`
 	FlushDBAsync               *bool                       `yaml:"flushDBAsync,omitempty"`
 	GeoAdd                     *GeoAdd                     `yaml:"geoAdd,omitempty"`
-	LastSave                   bool                        `yaml:"lastSave,omitempty"`
+	LastSave                   *bool                       `yaml:"lastSave,omitempty"`
 	GeoDist                    *GeoDist                    `yaml:"geoDist,omitempty"`
 	GeoHash                    *GeoHash                    `yaml:"geoHash,omitempty"`
 	GeoPos                     *GeoPos                     `yaml:"geoPos,omitempty"`
 	GeoRadius                  *GeoRadius                  `yaml:"geoRadius,omitempty"`
-	GeoRadiusByMember          GeoRadiusByMember           `yaml:"geoRadiusByMember,omitempty"`
+	GeoRadiusByMember          *GeoRadiusByMember          `yaml:"geoRadiusByMember,omitempty"`
 	GeoRadiusByMemberStore     *GeoRadiusByMemberStore     `yaml:"geoRadiusByMemberStore,omitempty"`
 	GeoRadiusStore             *GeoRadiusStore             `yaml:"geoRadiusStore,omitempty"`
 	Get                        *Get                        `yaml:"get,omitempty"`
@@ -2342,12 +2395,9 @@ type Command struct {
 	ShutdownNoSave             *bool                       `yaml:"shutdownNoSave,omitempty"`
 	ShutdownSave               *bool                       `yaml:"shutdownSave,omitempty"`
 	SlaveOf                    *SlaveOf                    `yaml:"slaveOf,omitempty"`
-	SlowLog                    *bool                       `yaml:"slowLog,omitempty"`
 	Sort                       *Sort                       `yaml:"sort,omitempty"`
 	SortInterfaces             *SortInterfaces             `yaml:"sortInterfaces,omitempty"`
 	SortStore                  *SortStore                  `yaml:"sortStore,omitempty"`
-	StrLen                     *StrLen                     `yaml:"strLen,omitempty"`
-	String                     *bool                       `yaml:"string,omitempty"`
 	TTL                        *TTL                        `yaml:"ttl,omitempty"`
 	Time                       *bool                       `yaml:"time,omitempty"`
 	Touch                      *Touch                      `yaml:"touch,omitempty"`

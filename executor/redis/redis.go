@@ -3,8 +3,8 @@ package redis
 import (
 	"context"
 
-	v7 "github.com/go-redis/redis/v7"
 	redisconf "github.com/hodgesds/dlg/config/redis"
+	"github.com/hodgesds/dlg/executor"
 )
 
 type redisExecutor struct{}
@@ -15,6 +15,6 @@ func New() executor.Redis {
 }
 
 // Execute implements the Redis interface.
-func (e *httpExecutor) Execute(ctx context.Context, conf *redisconf.Config) error {
+func (e *redisExecutor) Execute(ctx context.Context, conf *redisconf.Config) error {
 	return conf.Execute(ctx)
 }
