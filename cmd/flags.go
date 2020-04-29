@@ -31,17 +31,17 @@ var (
 	name   string
 	repeat int
 	tags   = []string{}
-
-	planFlags = pflag.NewFlagSet("", pflag.ExitOnError)
 )
 
-func init() {
+func planFlags() *pflag.FlagSet {
+	planFlags := pflag.NewFlagSet("", pflag.ExitOnError)
 	planFlags.BoolVar(&debug, "debug", false, "debug")
 	planFlags.StringVar(&name, "name", "cli", "execution name")
 	planFlags.IntVarP(&repeat, "repeat", "r", 0, "number of times to repeat")
 	planFlags.IntVarP(&count, "count", "c", 100, "number of times to execute")
 	planFlags.DurationVarP(&dur, "duration", "d", 0, "execution duration")
 	planFlags.StringSliceVar(&tags, "tags", nil, "metrics tags")
+	return planFlags
 }
 
 func flagsFromStruct(s interface{}) (*pflag.FlagSet, error) {

@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/hodgesds/dlg/config"
+	"github.com/hodgesds/dlg/config/dns"
 	"github.com/hodgesds/dlg/config/etcd"
 	"github.com/hodgesds/dlg/config/http"
 	"github.com/hodgesds/dlg/config/redis"
@@ -14,6 +15,11 @@ import (
 // Plan is used for executing a Plan.
 type Plan interface {
 	Execute(context.Context, *config.Plan) error
+}
+
+// DNS is used for executing a DNS.
+type DNS interface {
+	Execute(context.Context, *dns.Config) error
 }
 
 // Stage is used for executing a Stage.

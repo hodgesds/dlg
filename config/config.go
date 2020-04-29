@@ -135,6 +135,9 @@ func (s *Stage) Validate() error {
 	if s.Redis != nil {
 		stageTypes++
 	}
+	if s.DNS != nil {
+		stageTypes++
+	}
 	if s.ETCD != nil {
 		stageTypes++
 	}

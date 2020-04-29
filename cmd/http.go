@@ -103,7 +103,7 @@ var httpCmd = &cobra.Command{
 func init() {
 	RootCmd.AddCommand(httpCmd)
 
-	httpCmd.PersistentFlags().AddFlagSet(planFlags)
+	httpCmd.PersistentFlags().AddFlagSet(planFlags())
 	httpCmd.PersistentFlags().
 		StringVarP(&httpConf.Payload.Method, "method", "m", "GET", "HTTP method")
 	httpCmd.PersistentFlags().

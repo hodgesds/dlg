@@ -17,6 +17,7 @@ var (
 )
 
 type stageExecutor struct {
+	dns   executor.DNS
 	etcd  executor.ETCD
 	http  executor.HTTP
 	redis executor.Redis
@@ -26,6 +27,7 @@ type stageExecutor struct {
 
 // Params is used for configuring a Stage executor.
 type Params struct {
+	DNS   executor.DNS
 	ETCD  executor.ETCD
 	HTTP  executor.HTTP
 	Redis executor.Redis
@@ -36,6 +38,7 @@ type Params struct {
 // New returns a new Stage executor.
 func New(p Params) executor.Stage {
 	return &stageExecutor{
+		dns:   p.DNS,
 		etcd:  p.ETCD,
 		http:  p.HTTP,
 		redis: p.Redis,
@@ -101,6 +104,14 @@ func (e *stageExecutor) Execute(ctx context.Context, s *config.Stage) error {
 			return ErrNoStageExecutor
 		}
 		if err := e.udp.Execute(exCtx, s.UDP); err != nil {
+			return err
+		}
+	}
+	if s.DNS != nil {
+		if e.dns == nil {
+			return ErrNoStageExecutor
+		}
+		if err := e.dns.Execute(exCtx, s.DNS); err != nil {
 			return err
 		}
 	}

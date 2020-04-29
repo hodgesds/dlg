@@ -15,8 +15,15 @@
 package cmd
 
 import (
+	"context"
 	"fmt"
+	"log"
 
+	"github.com/hodgesds/dlg/config"
+	dnsconfig "github.com/hodgesds/dlg/config/dns"
+	"github.com/hodgesds/dlg/executor"
+	dnsexec "github.com/hodgesds/dlg/executor/dns"
+	stageexec "github.com/hodgesds/dlg/executor/stage"
 	"github.com/spf13/cobra"
 )
 
@@ -26,11 +33,49 @@ var dnsCmd = &cobra.Command{
 	Short: "dns load generator",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
-		// TODO: Work your own magic here
-		fmt.Println("dns called")
+		plan := &config.Plan{
+			Name: name,
+			Tags: tags,
+		}
+		stage := &config.Stage{
+			Name:       fmt.Sprintf("%s-http", name),
+			Tags:       tags,
+			Repeat:     repeat,
+			Concurrent: true,
+			Children:   []*config.Stage{},
+		}
+		if dur > 0 {
+			stage.Duration = &dur
+		}
+
+		for i, arg := range args {
+			child := &config.Stage{
+				Name: fmt.Sprintf("%s-%d", stage.Name, i),
+				Tags: tags,
+				DNS: &dnsconfig.Config{
+					ResourceRecords: []string{arg},
+				},
+			}
+			stage.Children = append(stage.Children, child)
+		}
+
+		plan.Stages = []*config.Stage{stage}
+
+		planExec := executor.NewPlan(stageexec.New(
+			stageexec.Params{
+				DNS: dnsexec.New(),
+			},
+		))
+
+		err := planExec.Execute(context.Background(), plan)
+		if err != nil {
+			log.Fatal(err)
+		}
 	},
 }
 
 func init() {
 	RootCmd.AddCommand(dnsCmd)
+
+	dnsCmd.PersistentFlags().AddFlagSet(planFlags())
 }
