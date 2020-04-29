@@ -1621,15 +1621,20 @@ type Expire struct {
 	Key        string        `yaml:"key"`
 	Expiration time.Duration `yaml:"expiration"`
 }
+
+// ExpireAt ...
 type ExpireAt struct {
 	Key  string    `yaml:"key"`
 	Time time.Time `yaml:"time"`
 }
+
+// GeoAdd ...
 type GeoAdd struct {
 	Key         string            `yaml:"key"`
 	GeoLocation []*v7.GeoLocation `yaml:"geoLocation"`
 }
 
+// GeoDist ...
 type GeoDist struct {
 	Key     string `yaml:"key"`
 	Member1 string `yaml:"member1"`
@@ -1637,32 +1642,41 @@ type GeoDist struct {
 	Unit    string `yaml:"unit"`
 }
 
+// GeoHash ...
 type GeoHash struct {
 	Key     string   `yaml:"key"`
 	Members []string `yaml:"members"`
 }
 
+// GeoPos ...
 type GeoPos struct {
 	Key     string   `yaml:"key"`
 	Members []string `yaml:"members"`
 }
+
+// GeoRadius ...
 type GeoRadius struct {
 	Key       string            `yaml:"key"`
 	Longitude float64           `yaml:"longitude"`
 	Latitude  float64           `yaml:"latitude"`
 	Query     v7.GeoRadiusQuery `yaml:"query"`
 }
+
+// GeoRadiusByMember ...
 type GeoRadiusByMember struct {
 	Key    string             `yaml:"key"`
 	Member string             `yaml:"member"`
 	Query  *v7.GeoRadiusQuery `yaml:"query"`
 }
 
+// GeoRadiusByMemberStore ...
 type GeoRadiusByMemberStore struct {
 	Key    string             `yaml:"key"`
 	Member string             `yaml:"member"`
 	Query  *v7.GeoRadiusQuery `yaml:"query"`
 }
+
+// GeoRadiusStore ...
 type GeoRadiusStore struct {
 	Key       string             `yaml:"key"`
 	Longitude float64            `yaml:"longitude"`
@@ -1670,122 +1684,165 @@ type GeoRadiusStore struct {
 	Query     *v7.GeoRadiusQuery `yaml:"query"`
 }
 
+// Get ...
 type Get struct {
 	Key string `yaml:"key"`
 }
 
+// GetBit ...
 type GetBit struct {
 	Key    string `yaml:"key"`
 	Offset int64  `yaml:"offset"`
 }
 
+// GetRange ...
 type GetRange struct {
 	Key   string `yaml:"key"`
 	Start int64  `yaml:"start"`
 	End   int64  `yaml:"end"`
 }
 
+// GetSet ...
 type GetSet struct {
 	Key   string `yaml:"key"`
 	Value string `yaml:"value"`
 }
 
+// HDel ...
 type HDel struct {
 	Key    string   `yaml:"key"`
 	Fields []string `yaml:"fields"`
 }
 
+// HExists ...
 type HExists struct {
 	Key   string `yaml:"key"`
 	Field string `yaml:"field"`
 }
 
+// HGet ...
 type HGet struct {
 	Key   string `yaml:"key"`
 	Field string `yaml:"field"`
 }
 
+// HGetAll ...
 type HGetAll struct {
 	Key string `yaml:"key"`
 }
 
+// HIncrBy ...
 type HIncrBy struct {
 	Key   string `yaml:"key"`
 	Field string `yaml:"field"`
 	Incr  int64  `yaml:"incr"`
 }
 
+// HIncrByFloat ...
 type HIncrByFloat struct {
 	Key   string  `yaml:"key"`
 	Field string  `yaml:"field"`
 	Incr  float64 `yaml:"incr"`
 }
 
+// HKeys ...
 type HKeys struct {
 	Key string `yaml:"key"`
 }
+
+// HLen ...
 type HLen struct {
 	Key string `yaml:"key"`
 }
+
+// HMGet ...
 type HMGet struct {
 	Key    string   `yaml:"key"`
 	Fields []string `yaml:"fields"`
 }
+
+// HScan ...
 type HScan struct {
 	Key    string `yaml:"key"`
 	Cursor uint64 `yaml:"cursor"`
 	Match  string `yaml:"match"`
 	Count  int64  `yaml:"count"`
 }
+
+// HVals ...
 type HVals struct {
 	Key string `yaml:"key"`
 }
+
+// Incr ...
 type Incr struct {
 	Key string `yaml:"key"`
 }
+
+// IncrBy ...
 type IncrBy struct {
 	Key   string `yaml:"key"`
 	Value int64  `yaml:"value"`
 }
+
+// IncrByFloat ...
 type IncrByFloat struct {
 	Key   string  `yaml:"key"`
 	Value float64 `yaml:"value"`
 }
+
+// Info ...
 type Info struct {
 	Section []string `yaml:"section"`
 }
+
+// Keys ...
 type Keys struct {
 	Pattern string `yaml:"pattern"`
 }
 
+// LIndex ...
 type LIndex struct {
 	Key   string `yaml:"key"`
 	Index int64  `yaml:"index"`
 }
+
+// LLen ...
 type LLen struct {
 	Key string `yaml:"key"`
 }
+
+// LPop ...
 type LPop struct {
 	Key string `yaml:"key"`
 }
+
+// LRange ...
 type LRange struct {
 	Key   string `yaml:"key"`
 	Start int64  `yaml:"start"`
 	Stop  int64  `yaml:"stop"`
 }
+
+// LTrim ...
 type LTrim struct {
 	Key   string `yaml:"key"`
 	Start int64  `yaml:"start"`
 	Stop  int64  `yaml:"stop"`
 }
 
+// MGet ...
 type MGet struct {
 	Keys []string `yaml:"keys"`
 }
+
+// MemoryUsage ...
 type MemoryUsage struct {
 	Key     string `yaml:"key"`
 	Samples []int  `yaml:"samples"`
 }
+
+// Migrate ...
 type Migrate struct {
 	Host    string        `yaml:"host"`
 	Port    string        `yaml:"port"`
@@ -1794,449 +1851,642 @@ type Migrate struct {
 	Timeout time.Duration `yaml:"timeout"`
 }
 
+// Move ...
 type Move struct {
 	Key string `yaml:"key"`
 	Db  int    `yaml:"db"`
 }
+
+// ObjectEncoding ...
 type ObjectEncoding struct {
 	Key string `yaml:"key"`
 }
+
+// ObjectIdleTime ...
 type ObjectIdleTime struct {
 	Key string `yaml:"key"`
 }
+
+// ObjectRefCount ...
 type ObjectRefCount struct {
 	Key string `yaml:"key"`
 }
+
+// PExpire ...
 type PExpire struct {
 	Key        string        `yaml:"key"`
 	Expiration time.Duration `yaml:"expiration"`
 }
+
+// PExpireAt ...
 type PExpireAt struct {
 	Key  string    `yaml:"key"`
 	Time time.Time `yaml:"time"`
 }
+
+// PFCount ...
 type PFCount struct {
 	Keys []string `yaml:"keys"`
 }
+
+// PFMerge ...
 type PFMerge struct {
 	Dest string   `yaml:"dest"`
 	Keys []string `yaml:"keys"`
 }
 
+// PTTL ...
 type PTTL struct {
 	Key string `yaml:"key"`
 }
 
+// Persist ...
 type Persist struct {
 	Key string `yaml:"key"`
 }
 
+// PubSubChannels ...
 type PubSubChannels struct {
 	Pattern string `yaml:"pattern"`
 }
 
+// PubSubNumSub ...
 type PubSubNumSub struct {
 	Channels []string `yaml:"channels"`
 }
 
+// Publish ...
 type Publish struct {
 	Channel string `yaml:"channel"`
 	Message string `yaml:"message"`
 }
 
+// RPop ...
 type RPop struct {
 	Key string `yaml:"key"`
 }
+
+// RPopLPush ...
 type RPopLPush struct {
 	Source      string `yaml:"source"`
 	Destination string `yaml:"destination"`
 }
 
+// Rename ...
 type Rename struct {
 	Key    string `yaml:"key"`
 	Newkey string `yaml:"newkey"`
 }
+
+// RenameNX ...
 type RenameNX struct {
 	Key    string `yaml:"key"`
 	Newkey string `yaml:"newkey"`
 }
+
+// Restore ...
 type Restore struct {
 	Key   string        `yaml:"key"`
 	TTL   time.Duration `yaml:"ttl"`
 	Value string        `yaml:"value"`
 }
+
+// RestoreReplace ...
 type RestoreReplace struct {
 	Key   string        `yaml:"key"`
 	TTL   time.Duration `yaml:"ttl"`
 	Value string        `yaml:"value"`
 }
+
+// SCard ...
 type SCard struct {
 	Key string `yaml:"key"`
 }
+
+// SDiff ...
 type SDiff struct {
 	Keys []string `yaml:"keys"`
 }
+
+// SDiffStore ...
 type SDiffStore struct {
 	Destination string   `yaml:"destination"`
 	Keys        []string `yaml:"keys"`
 }
+
+// SInter ...
 type SInter struct {
 	Keys []string `yaml:"keys"`
 }
+
+// SInterStore ...
 type SInterStore struct {
 	Destination string   `yaml:"destination"`
 	Keys        []string `yaml:"keys"`
 }
+
+// SMembers ...
 type SMembers struct {
 	Key string `yaml:"key"`
 }
 
+// SMembersMap ...
 type SMembersMap struct {
 	Key string `yaml:"key"`
 }
+
+// SPop ...
 type SPop struct {
 	Key string `yaml:"key"`
 }
+
+// SPopN ...
 type SPopN struct {
 	Key   string `yaml:"key"`
 	Count int64  `yaml:"count"`
 }
+
+// SRandMember ...
 type SRandMember struct {
 	Key string `yaml:"key"`
 }
 
+// SRandMemberN ...
 type SRandMemberN struct {
 	Key   string `yaml:"key"`
 	Count int64  `yaml:"count"`
 }
+
+// SRem ...
 type SRem struct {
 	Key     string   `yaml:"key"`
 	Members []string `yaml:"members"`
 }
+
+// SScan ...
 type SScan struct {
 	Key    string `yaml:"key"`
 	Cursor uint64 `yaml:"cursor"`
 	Match  string `yaml:"match"`
 	Count  int64  `yaml:"count"`
 }
+
+// SUnion ...
 type SUnion struct {
 	Keys []string `yaml:"keys"`
 }
 
+// SUnionStore ...
 type SUnionStore struct {
 	Destination string   `yaml:"destination"`
 	Keys        []string `yaml:"keys"`
 }
+
+// Scan ...
 type Scan struct {
 	Cursor uint64 `yaml:"cursor"`
 	Match  string `yaml:"match"`
 	Count  int64  `yaml:"count"`
 }
 
+// ScriptExists ...
 type ScriptExists struct {
 	Hashes []string `yaml:"hashes"`
 }
 
+// Set ...
 type Set struct {
 	Key        string        `yaml:"key"`
 	Value      string        `yaml:"value"`
 	Expiration time.Duration `yaml:"expiration"`
 }
 
+// SetBit ...
 type SetBit struct {
 	Key    string `yaml:"key"`
 	Offset int64  `yaml:"offset"`
 	Value  int    `yaml:"value"`
 }
+
+// SetRange ...
 type SetRange struct {
 	Key    string `yaml:"key"`
 	Offset int64  `yaml:"offset"`
 	Value  string `yaml:"value"`
 }
+
+// SlaveOf ...
 type SlaveOf struct {
 	Host string `yaml:"host"`
 	Port string `yaml:"port"`
 }
+
+// Sort ...
 type Sort struct {
 	Key  string   `yaml:"key"`
 	Sort *v7.Sort `yaml:"sort"`
 }
+
+// SortInterfaces ...
 type SortInterfaces struct {
 	Key  string   `yaml:"key"`
 	Sort *v7.Sort `yaml:"sort"`
 }
+
+// SortStore ...
 type SortStore struct {
 	Key   string   `yaml:"key"`
 	Store string   `yaml:"store"`
 	Sort  *v7.Sort `yaml:"sort"`
 }
+
+// StrLen ...
 type StrLen struct {
 	Key string `yaml:"key"`
 }
+
+// TTL ...
 type TTL struct {
 	Key string `yaml:"key"`
 }
+
+// Touch ...
 type Touch struct {
 	Keys []string `yaml:"keys"`
 }
+
+// Type ...
 type Type struct {
 	Key string `yaml:"key"`
 }
+
+// Unlink ...
 type Unlink struct {
 	Keys []string `yaml:"keys"`
 }
+
+// Wait ...
 type Wait struct {
 	NumSlaves int           `yaml:"numSlaves"`
 	Timeout   time.Duration `yaml:"timeout"`
 }
+
+// XAck ...
 type XAck struct {
 	Stream string   `yaml:"stream"`
 	Group  string   `yaml:"group"`
 	Ids    []string `yaml:"ids"`
 }
 
+// XAdd ...
 type XAdd struct {
 	A *v7.XAddArgs `yaml:"a"`
 }
+
+// XClaim ...
 type XClaim struct {
 	A *v7.XClaimArgs `yaml:"a"`
 }
+
+// XClaimJustID ...
 type XClaimJustID struct {
 	A *v7.XClaimArgs `yaml:"a"`
 }
+
+// XDel ...
 type XDel struct {
 	Stream string   `yaml:"stream"`
 	Ids    []string `yaml:"ids"`
 }
+
+// XGroupCreate ...
 type XGroupCreate struct {
 	Stream string `yaml:"stream"`
 	Group  string `yaml:"group"`
 	Start  string `yaml:"start"`
 }
+
+// XGroupCreateMkStream ...
 type XGroupCreateMkStream struct {
 	Stream string `yaml:"stream"`
 	Group  string `yaml:"group"`
 	Start  string `yaml:"start"`
 }
 
+// XGroupDelConsumer ...
 type XGroupDelConsumer struct {
 	Stream   string `yaml:"stream"`
 	Group    string `yaml:"group"`
 	Consumer string `yaml:"consumer"`
 }
+
+// XGroupDestroy ...
 type XGroupDestroy struct {
 	Stream string `yaml:"stream"`
 	Group  string `yaml:"group"`
 }
+
+// XGroupSetID ...
 type XGroupSetID struct {
 	Stream string `yaml:"stream"`
 	Group  string `yaml:"group"`
 	Start  string `yaml:"start"`
 }
+
+// XInfoGroups ...
 type XInfoGroups struct {
 	Key string `yaml:"key"`
 }
+
+// XLen ...
 type XLen struct {
 	Stream string `yaml:"stream"`
 }
+
+// XPending ...
 type XPending struct {
 	Stream string `yaml:"stream"`
 	Group  string `yaml:"group"`
 }
+
+// XPendingExt ...
 type XPendingExt struct {
 	A *v7.XPendingExtArgs `yaml:"a"`
 }
+
+// XRange ...
 type XRange struct {
 	Stream string `yaml:"stream"`
 	Start  string `yaml:"start"`
 	Stop   string `yaml:"stop"`
 }
 
+// XRangeN ...
 type XRangeN struct {
 	Stream string `yaml:"stream"`
 	Start  string `yaml:"start"`
 	Stop   string `yaml:"stop"`
 	Count  int64  `yaml:"count"`
 }
+
+// XRead ...
 type XRead struct {
 	A *v7.XReadArgs `yaml:"a"`
 }
+
+// XReadGroup ...
 type XReadGroup struct {
 	A *v7.XReadGroupArgs `yaml:"a"`
 }
+
+// XReadStreams ...
 type XReadStreams struct {
 	Streams []string `yaml:"streams"`
 }
+
+// XRevRange ...
 type XRevRange struct {
 	Stream string `yaml:"stream"`
 	Start  string `yaml:"start"`
 	Stop   string `yaml:"stop"`
 }
+
+// XRevRangeN ...
 type XRevRangeN struct {
 	Stream string `yaml:"stream"`
 	Start  string `yaml:"start"`
 	Stop   string `yaml:"stop"`
 	Count  int64  `yaml:"count"`
 }
+
+// XTrim ...
 type XTrim struct {
 	Key    string `yaml:"key"`
 	MaxLen int64  `yaml:"maxLen"`
 }
+
+// XTrimApprox ...
 type XTrimApprox struct {
 	Key    string `yaml:"key"`
 	MaxLen int64  `yaml:"maxLen"`
 }
+
+// ZAdd ...
 type ZAdd struct {
 	Key     string  `yaml:"key"`
 	Members []*v7.Z `yaml:"members"`
 }
+
+// ZAddCh ...
 type ZAddCh struct {
 	Key     string  `yaml:"key"`
 	Members []*v7.Z `yaml:"members"`
 }
+
+// ZAddNX ...
 type ZAddNX struct {
 	Key     string  `yaml:"key"`
 	Members []*v7.Z `yaml:"members"`
 }
+
+// ZAddNXCh ...
 type ZAddNXCh struct {
 	Key     string  `yaml:"key"`
 	Members []*v7.Z `yaml:"members"`
 }
+
+// ZAddXX ...
 type ZAddXX struct {
 	Key     string  `yaml:"key"`
 	Members []*v7.Z `yaml:"members"`
 }
 
+// ZAddXXCh ...
 type ZAddXXCh struct {
 	Key     string  `yaml:"key"`
 	Members []*v7.Z `yaml:"members"`
 }
+
+// ZCard ...
 type ZCard struct {
 	Key string `yaml:"key"`
 }
+
+// ZCount ...
 type ZCount struct {
 	Key string `yaml:"key"`
 	Min string `yaml:"min"`
 	Max string `yaml:"max"`
 }
+
+// ZIncr ...
 type ZIncr struct {
 	Key    string `yaml:"key"`
 	Member *v7.Z  `yaml:"member"`
 }
+
+// ZIncrBy ...
 type ZIncrBy struct {
 	Key       string  `yaml:"key"`
 	Increment float64 `yaml:"increment"`
 	Member    string  `yaml:"member"`
 }
+
+// ZIncrNX ...
 type ZIncrNX struct {
 	Key    string `yaml:"key"`
 	Member *v7.Z  `yaml:"member"`
 }
+
+// ZIncrXX ...
 type ZIncrXX struct {
 	Key    string `yaml:"key"`
 	Member *v7.Z  `yaml:"member"`
 }
+
+// ZInterStore ...
 type ZInterStore struct {
 	Destination string     `yaml:"destination"`
 	Store       *v7.ZStore `yaml:"store"`
 }
 
+// ZLexCount ...
 type ZLexCount struct {
 	Key string `yaml:"key"`
 	Min string `yaml:"min"`
 	Max string `yaml:"max"`
 }
+
+// ZPopMax ...
 type ZPopMax struct {
 	Key   string  `yaml:"key"`
 	Count []int64 `yaml:"count"`
 }
+
+// ZPopMin ...
 type ZPopMin struct {
 	Key   string  `yaml:"key"`
 	Count []int64 `yaml:"count"`
 }
+
+// ZRange ...
 type ZRange struct {
 	Key   string `yaml:"key"`
 	Start int64  `yaml:"start"`
 	Stop  int64  `yaml:"stop"`
 }
+
+// ZRangeByLex ...
 type ZRangeByLex struct {
 	Key string       `yaml:"key"`
 	Opt *v7.ZRangeBy `yaml:"opt"`
 }
+
+// ZRangeByScore ...
 type ZRangeByScore struct {
 	Key string       `yaml:"key"`
 	Opt *v7.ZRangeBy `yaml:"opt"`
 }
+
+// ZRangeByScoreWithScores ...
 type ZRangeByScoreWithScores struct {
 	Key string       `yaml:"key"`
 	Opt *v7.ZRangeBy `yaml:"opt"`
 }
+
+// ZRangeWithScores ...
 type ZRangeWithScores struct {
 	Key   string `yaml:"key"`
 	Start int64  `yaml:"start"`
 	Stop  int64  `yaml:"stop"`
 }
+
+// ZRank ...
 type ZRank struct {
 	Key    string `yaml:"key"`
 	Member string `yaml:"member"`
 }
+
+// ZRem ...
 type ZRem struct {
 	Key     string   `yaml:"key"`
 	Members []string `yaml:"members"`
 }
+
+// ZRemRangeByLex ...
 type ZRemRangeByLex struct {
 	Key string `yaml:"key"`
 	Min string `yaml:"min"`
 	Max string `yaml:"max"`
 }
+
+// ZRemRangeByRank ...
 type ZRemRangeByRank struct {
 	Key   string `yaml:"key"`
 	Start int64  `yaml:"start"`
 	Stop  int64  `yaml:"stop"`
 }
+
+// ZRemRangeByScore ...
 type ZRemRangeByScore struct {
 	Key string `yaml:"key"`
 	Min string `yaml:"min"`
 	Max string `yaml:"max"`
 }
+
+// ZRevRange ...
 type ZRevRange struct {
 	Key   string `yaml:"key"`
 	Start int64  `yaml:"start"`
 	Stop  int64  `yaml:"stop"`
 }
+
+// ZRevRangeByLex ...
 type ZRevRangeByLex struct {
 	Key string       `yaml:"key"`
 	Opt *v7.ZRangeBy `yaml:"opt"`
 }
 
+// ZRevRangeByScore ...
 type ZRevRangeByScore struct {
 	Key string       `yaml:"key"`
 	Opt *v7.ZRangeBy `yaml:"opt"`
 }
+
+// ZRevRangeByScoreWithScores ...
 type ZRevRangeByScoreWithScores struct {
 	Key string       `yaml:"key"`
 	Opt *v7.ZRangeBy `yaml:"opt"`
 }
+
+// ZRevRangeWithScores ...
 type ZRevRangeWithScores struct {
 	Key   string `yaml:"key"`
 	Start int64  `yaml:"start"`
 	Stop  int64  `yaml:"stop"`
 }
+
+// ZRevRank ...
 type ZRevRank struct {
 	Key    string `yaml:"key"`
 	Member string `yaml:"member"`
 }
+
+// ZScan ...
 type ZScan struct {
 	Key    string `yaml:"key"`
 	Cursor uint64 `yaml:"cursor"`
 	Match  string `yaml:"match"`
 	Count  int64  `yaml:"count"`
 }
+
+// ZScore ...
 type ZScore struct {
 	Key    string `yaml:"key"`
 	Member string `yaml:"member"`
 }
 
+// ZUnionStore ...
 type ZUnionStore struct {
 	Dest  string     `yaml:"dest"`
 	Store *v7.ZStore `yaml:"store"`

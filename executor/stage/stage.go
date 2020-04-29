@@ -17,33 +17,48 @@ var (
 )
 
 type stageExecutor struct {
-	dns   executor.DNS
-	etcd  executor.ETCD
-	http  executor.HTTP
-	redis executor.Redis
-	sql   executor.SQL
-	udp   executor.UDP
+	dhcp4     executor.DHCP4
+	dns       executor.DNS
+	etcd      executor.ETCD
+	http      executor.HTTP
+	kafka     executor.Kafka
+	ldap      executor.LDAP
+	memcache  executor.Memcache
+	redis     executor.Redis
+	sql       executor.SQL
+	udp       executor.UDP
+	websocket executor.Websocket
 }
 
 // Params is used for configuring a Stage executor.
 type Params struct {
-	DNS   executor.DNS
-	ETCD  executor.ETCD
-	HTTP  executor.HTTP
-	Redis executor.Redis
-	SQL   executor.SQL
-	UDP   executor.UDP
+	DHCP4     executor.DHCP4
+	DNS       executor.DNS
+	ETCD      executor.ETCD
+	HTTP      executor.HTTP
+	Kafka     executor.Kafka
+	LDAP      executor.LDAP
+	Memcache  executor.Memcache
+	Redis     executor.Redis
+	SQL       executor.SQL
+	UDP       executor.UDP
+	Websocket executor.Websocket
 }
 
 // New returns a new Stage executor.
 func New(p Params) executor.Stage {
 	return &stageExecutor{
-		dns:   p.DNS,
-		etcd:  p.ETCD,
-		http:  p.HTTP,
-		redis: p.Redis,
-		sql:   p.SQL,
-		udp:   p.UDP,
+		dhcp4:     p.DHCP4,
+		dns:       p.DNS,
+		etcd:      p.ETCD,
+		http:      p.HTTP,
+		kafka:     p.Kafka,
+		ldap:      p.LDAP,
+		memcache:  p.Memcache,
+		redis:     p.Redis,
+		sql:       p.SQL,
+		udp:       p.UDP,
+		websocket: p.Websocket,
 	}
 }
 
@@ -67,19 +82,19 @@ func (e *stageExecutor) Execute(ctx context.Context, s *config.Stage) error {
 	}
 	defer cancel()
 
-	if s.HTTP != nil {
-		if e.http == nil {
+	if s.DHCP4 != nil {
+		if e.dhcp4 == nil {
 			return ErrNoStageExecutor
 		}
-		if err := e.http.Execute(exCtx, s.HTTP); err != nil {
+		if err := e.dhcp4.Execute(exCtx, s.DHCP4); err != nil {
 			return err
 		}
 	}
-	if s.Redis != nil {
-		if e.redis == nil {
+	if s.DNS != nil {
+		if e.dns == nil {
 			return ErrNoStageExecutor
 		}
-		if err := e.redis.Execute(exCtx, s.Redis); err != nil {
+		if err := e.dns.Execute(exCtx, s.DNS); err != nil {
 			return err
 		}
 	}
@@ -88,6 +103,46 @@ func (e *stageExecutor) Execute(ctx context.Context, s *config.Stage) error {
 			return ErrNoStageExecutor
 		}
 		if err := e.etcd.Execute(exCtx, s.ETCD); err != nil {
+			return err
+		}
+	}
+	if s.HTTP != nil {
+		if e.http == nil {
+			return ErrNoStageExecutor
+		}
+		if err := e.http.Execute(exCtx, s.HTTP); err != nil {
+			return err
+		}
+	}
+	if s.Kafka != nil {
+		if e.kafka == nil {
+			return ErrNoStageExecutor
+		}
+		if err := e.kafka.Execute(exCtx, s.Kafka); err != nil {
+			return err
+		}
+	}
+	if s.LDAP != nil {
+		if e.ldap == nil {
+			return ErrNoStageExecutor
+		}
+		if err := e.ldap.Execute(exCtx, s.LDAP); err != nil {
+			return err
+		}
+	}
+	if s.Memcache != nil {
+		if e.memcache == nil {
+			return ErrNoStageExecutor
+		}
+		if err := e.memcache.Execute(exCtx, s.Memcache); err != nil {
+			return err
+		}
+	}
+	if s.Redis != nil {
+		if e.redis == nil {
+			return ErrNoStageExecutor
+		}
+		if err := e.redis.Execute(exCtx, s.Redis); err != nil {
 			return err
 		}
 	}
@@ -107,11 +162,11 @@ func (e *stageExecutor) Execute(ctx context.Context, s *config.Stage) error {
 			return err
 		}
 	}
-	if s.DNS != nil {
-		if e.dns == nil {
+	if s.Websocket != nil {
+		if e.websocket == nil {
 			return ErrNoStageExecutor
 		}
-		if err := e.dns.Execute(exCtx, s.DNS); err != nil {
+		if err := e.websocket.Execute(exCtx, s.Websocket); err != nil {
 			return err
 		}
 	}
