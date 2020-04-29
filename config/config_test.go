@@ -5,10 +5,18 @@ import (
 	"testing"
 	"time"
 
+	"github.com/hodgesds/dlg/config/dhcp4"
+	"github.com/hodgesds/dlg/config/dns"
 	"github.com/hodgesds/dlg/config/etcd"
 	"github.com/hodgesds/dlg/config/http"
+	"github.com/hodgesds/dlg/config/kafka"
+	"github.com/hodgesds/dlg/config/ldap"
+	"github.com/hodgesds/dlg/config/memcache"
 	"github.com/hodgesds/dlg/config/redis"
 	"github.com/hodgesds/dlg/config/sql"
+	"github.com/hodgesds/dlg/config/ssh"
+	"github.com/hodgesds/dlg/config/udp"
+	"github.com/hodgesds/dlg/config/websocket"
 	"github.com/stretchr/testify/require"
 	"gopkg.in/yaml.v2"
 )
@@ -18,6 +26,31 @@ func TestConfig(t *testing.T) {
 		Name:      "test plan",
 		Executors: 1,
 		Stages: []*Stage{
+			{
+				Name:   "dhcp4",
+				Repeat: 5,
+				DHCP4:  &dhcp4.Config{},
+			},
+			{
+				Name:   "dns",
+				Repeat: 5,
+				DNS:    &dns.Config{},
+			},
+			{
+				Name:   "etcd",
+				Repeat: 5,
+				ETCD: &etcd.Config{
+					Endpoints:   []string{"localhost:1234"},
+					DialTimeout: 5 * time.Second,
+					KV: []*etcd.KV{
+						{
+							Get: &etcd.Get{
+								Key: "foo",
+							},
+						},
+					},
+				},
+			},
 			{
 				Name:   "http",
 				Repeat: 5,
@@ -55,14 +88,30 @@ func TestConfig(t *testing.T) {
 				},
 			},
 			{
-				Name:   "etcd",
+				Name:   "kafka",
 				Repeat: 5,
-				ETCD: &etcd.Config{
-					Endpoints:   []string{"localhost:1234"},
-					DialTimeout: 5 * time.Second,
-					KV: []*etcd.KV{
+				Kafka:  &kafka.Config{},
+			},
+			{
+				Name:   "ldap",
+				Repeat: 5,
+				LDAP:   &ldap.Config{},
+			},
+			{
+				Name:     "memcache",
+				Repeat:   5,
+				Memcache: &memcache.Config{},
+			},
+			{
+				Name:   "redis",
+				Repeat: 10,
+				Redis: &redis.Config{
+					Network: "eth1",
+					Addr:    "127.0.0.1:1234",
+					DB:      1,
+					Commands: []*redis.Command{
 						{
-							Get: &etcd.Get{
+							Get: &redis.Get{
 								Key: "foo",
 							},
 						},
@@ -82,20 +131,19 @@ func TestConfig(t *testing.T) {
 				},
 			},
 			{
-				Name:   "redis",
-				Repeat: 10,
-				Redis: &redis.Config{
-					Network: "eth1",
-					Addr:    "127.0.0.1:1234",
-					DB:      1,
-					Commands: []*redis.Command{
-						{
-							Get: &redis.Get{
-								Key: "foo",
-							},
-						},
-					},
-				},
+				Name:   "ssh",
+				Repeat: 5,
+				SSH:    &ssh.Config{},
+			},
+			{
+				Name:   "udp",
+				Repeat: 5,
+				UDP:    &udp.Config{},
+			},
+			{
+				Name:      "websocket",
+				Repeat:    5,
+				Websocket: &websocket.Config{},
 			},
 		},
 	}

@@ -129,10 +129,7 @@ func (s *Stage) Validate() error {
 		return errors.New("invalid number of repeats")
 	}
 	stageTypes := 0
-	if s.HTTP != nil {
-		stageTypes++
-	}
-	if s.Redis != nil {
+	if s.DHCP4 != nil {
 		stageTypes++
 	}
 	if s.DNS != nil {
@@ -141,10 +138,25 @@ func (s *Stage) Validate() error {
 	if s.ETCD != nil {
 		stageTypes++
 	}
+	if s.HTTP != nil {
+		stageTypes++
+	}
+	if s.Kafka != nil {
+		stageTypes++
+	}
+	if s.LDAP != nil {
+		stageTypes++
+	}
 	if s.Memcache != nil {
 		stageTypes++
 	}
+	if s.Redis != nil {
+		stageTypes++
+	}
 	if s.SQL != nil {
+		stageTypes++
+	}
+	if s.SSH != nil {
 		stageTypes++
 	}
 	if s.UDP != nil {

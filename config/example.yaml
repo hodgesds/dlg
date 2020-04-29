@@ -2,6 +2,31 @@ plan:
   name: test plan
   executors: 1
   stages:
+  - name: dhcp4
+    concurrent: false
+    repeat: 5
+    dhcp4:
+      iface: ""
+      hwaddr: []
+      retry: null
+      timeout: null
+  - name: dns
+    concurrent: false
+    repeat: 5
+    dns:
+      endpoints: []
+      resourceRecords: []
+      timeoutSec: 0
+  - name: etcd
+    concurrent: false
+    repeat: 5
+    etcd:
+      endpoints:
+      - localhost:1234
+      dialTimeout: 5s
+      kv:
+      - get:
+          key: foo
   - name: http
     concurrent: false
     repeat: 5
@@ -28,26 +53,23 @@ plan:
           method: GET
     concurrent: true
     repeat: 5
-  - name: etcd
+  - name: kafka
     concurrent: false
     repeat: 5
-    etcd:
-      endpoints:
-      - localhost:1234
-      dialTimeout: 5s
-      kv:
-      - get:
-          key: foo
-  - name: sql
+    kafka: {}
+  - name: ldap
     concurrent: false
     repeat: 5
-    sql:
-      mysqlDSN: user:password@/dbname
-      maxConns: 0
-      maxIdleConns: 0
-      concurrent: false
-      payloads:
-      - exec: Select * from users
+    ldap:
+      addr: ""
+      tls: false
+      user: ""
+      pass: ""
+      search: []
+  - name: memcache
+    concurrent: false
+    repeat: 5
+    memcache: {}
   - name: redis
     concurrent: false
     repeat: 10
@@ -59,3 +81,33 @@ plan:
       - clientUnblockWithError: null
         get:
           key: foo
+  - name: sql
+    concurrent: false
+    repeat: 5
+    sql:
+      mysqlDSN: user:password@/dbname
+      maxConns: 0
+      maxIdleConns: 0
+      concurrent: false
+      payloads:
+      - exec: Select * from users
+  - name: ssh
+    concurrent: false
+    repeat: 5
+    ssh:
+      addr: ""
+      user: ""
+      timeout: 0s
+  - name: udp
+    concurrent: false
+    repeat: 5
+    udp:
+      endpoint: ""
+      payloadBase64: null
+  - name: websocket
+    concurrent: false
+    repeat: 5
+    websocket:
+      url: ""
+      header: {}
+      enablecompression: false
