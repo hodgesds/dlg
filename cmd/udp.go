@@ -23,7 +23,7 @@ import (
 // udpCmd represents the udp command
 var udpCmd = &cobra.Command{
 	Use:   "udp",
-	Short: "",
+	Short: "udp load generator",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
 		// TODO: Work your own magic here

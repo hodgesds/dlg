@@ -23,7 +23,7 @@ import (
 // etcdCmd represents the etcd command
 var etcdCmd = &cobra.Command{
 	Use:   "etcd",
-	Short: "",
+	Short: "etcd load generator",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("etcd called")

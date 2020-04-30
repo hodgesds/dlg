@@ -23,7 +23,7 @@ import (
 // dhcp4Cmd represents the dhcp4 command
 var dhcp4Cmd = &cobra.Command{
 	Use:   "dhcp4",
-	Short: "",
+	Short: "dhcp4 load generator",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("dhcp4 called")

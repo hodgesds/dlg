@@ -23,7 +23,7 @@ import (
 // ldapCmd represents the ldap command
 var ldapCmd = &cobra.Command{
 	Use:   "ldap",
-	Short: "",
+	Short: "ldap load generator",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
 		// TODO: Work your own magic here

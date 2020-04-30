@@ -23,10 +23,9 @@ import (
 // memcacheCmd represents the memcache command
 var memcacheCmd = &cobra.Command{
 	Use:   "memcache",
-	Short: "",
+	Short: "memcache load generator",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
-		// TODO: Work your own magic here
 		fmt.Println("memcache called")
 	},
 }

@@ -23,10 +23,9 @@ import (
 // kafkaCmd represents the kafka command
 var kafkaCmd = &cobra.Command{
 	Use:   "kafka",
-	Short: "",
+	Short: "kafka load generator",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
-		// TODO: Work your own magic here
 		fmt.Println("kafka called")
 	},
 }
