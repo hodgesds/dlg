@@ -15,9 +15,22 @@
 package cmd
 
 import (
+	"context"
 	"fmt"
+	"log"
+	"net"
 
+	"github.com/hodgesds/dlg/config"
+	dhcp4conf "github.com/hodgesds/dlg/config/dhcp4"
+	"github.com/hodgesds/dlg/executor"
+	"github.com/hodgesds/dlg/executor/dhcp4"
+	stageexec "github.com/hodgesds/dlg/executor/stage"
 	"github.com/spf13/cobra"
+)
+
+var (
+	dhcp4Iface     string
+	dhcp4HwAddrStr string
 )
 
 // dhcp4Cmd represents the dhcp4 command
@@ -26,13 +39,59 @@ var dhcp4Cmd = &cobra.Command{
 	Short: "dhcp4 load generator",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("dhcp4 called")
+		addr, err := net.ParseMAC(dhcp4HwAddrStr)
+		if err != nil {
+			log.Fatal(err)
+		}
+		plan := &config.Plan{
+			Name: name,
+			Tags: tags,
+		}
+		stage := &config.Stage{
+			Name:       fmt.Sprintf("%s-dhcp4", name),
+			Tags:       tags,
+			Repeat:     repeat,
+			Concurrent: true,
+			Children:   []*config.Stage{},
+			DHCP4: &dhcp4conf.Config{
+				Iface:  dhcp4Iface,
+				HwAddr: addr,
+			},
+		}
+		if dur > 0 {
+			stage.Duration = &dur
+		}
+
+		plan.Stages = []*config.Stage{stage}
+
+		planExec := executor.NewPlan(stageexec.New(
+			stageexec.Params{
+				DHCP4: dhcp4.New(),
+			},
+		))
+
+		err = planExec.Execute(context.Background(), plan)
+		if err != nil {
+			log.Fatal(err)
+		}
 	},
 }
 
 func init() {
 	RootCmd.AddCommand(dhcp4Cmd)
 
+	dhcp4Cmd.PersistentFlags().StringVarP(
+		&dhcp4Iface,
+		"iface", "i",
+		"eth0",
+		"Network interface",
+	)
+	dhcp4Cmd.PersistentFlags().StringVarP(
+		&dhcp4HwAddrStr,
+		"addr", "a",
+		"44:85:00:17:d6:53",
+		"Hardware MAC address",
+	)
 	dhcp4Cmd.PersistentFlags().AddFlagSet(planFlags())
 	dhcp4Cmd.AddCommand(newDocCmd())
 }

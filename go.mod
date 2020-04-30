@@ -18,13 +18,18 @@ require (
 	github.com/gogo/protobuf v1.3.1 // indirect
 	github.com/google/uuid v1.1.1 // indirect
 	github.com/gorilla/websocket v1.4.0
+	github.com/hugelgupf/socketpair v0.0.0-20190730060125-05d35a94e714 // indirect
+	github.com/insomniacslk/dhcp v0.0.0-20200420235442-ed3125c2efe7
 	github.com/jonboulle/clockwork v0.1.0
 	github.com/lib/pq v1.3.0
+	github.com/mdlayher/ethernet v0.0.0-20190606142754-0394541c37b7 // indirect
+	github.com/mdlayher/raw v0.0.0-20191009151244-50f2db8cc065 // indirect
 	github.com/prometheus/client_golang v1.5.1
 	github.com/spf13/cobra v1.0.0
 	github.com/spf13/pflag v1.0.3
 	github.com/spf13/viper v1.6.3
 	github.com/stretchr/testify v1.4.0
+	github.com/u-root/u-root v6.0.0+incompatible // indirect
 	go.etcd.io/etcd v3.3.20+incompatible
 	go.uber.org/multierr v1.5.0
 	go.uber.org/zap v1.14.1 // indirect
