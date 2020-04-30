@@ -26,7 +26,6 @@ var etcdCmd = &cobra.Command{
 	Short: "",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
-		// TODO: Work your own magic here
 		fmt.Println("etcd called")
 	},
 }
