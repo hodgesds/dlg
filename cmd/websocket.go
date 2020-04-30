@@ -40,4 +40,5 @@ func init() {
 	RootCmd.AddCommand(websocketCmd)
 
 	websocketCmd.PersistentFlags().AddFlagSet(planFlags())
+	websocketCmd.AddCommand(newDocCmd())
 }

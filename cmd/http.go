@@ -104,6 +104,7 @@ func init() {
 	RootCmd.AddCommand(httpCmd)
 
 	httpCmd.PersistentFlags().AddFlagSet(planFlags())
+	httpCmd.AddCommand(newDocCmd())
 	httpCmd.PersistentFlags().
 		StringVarP(&httpConf.Payload.Method, "method", "m", "GET", "HTTP method")
 	httpCmd.PersistentFlags().

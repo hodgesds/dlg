@@ -35,4 +35,5 @@ func init() {
 	RootCmd.AddCommand(sshCmd)
 
 	sshCmd.PersistentFlags().AddFlagSet(planFlags())
+	sshCmd.AddCommand(newDocCmd())
 }

@@ -35,4 +35,5 @@ func init() {
 	RootCmd.AddCommand(kafkaCmd)
 
 	kafkaCmd.PersistentFlags().AddFlagSet(planFlags())
+	kafkaCmd.AddCommand(newDocCmd())
 }

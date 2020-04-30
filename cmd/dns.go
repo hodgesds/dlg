@@ -78,4 +78,5 @@ func init() {
 	RootCmd.AddCommand(dnsCmd)
 
 	dnsCmd.PersistentFlags().AddFlagSet(planFlags())
+	dnsCmd.AddCommand(newDocCmd())
 }

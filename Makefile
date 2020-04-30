@@ -21,6 +21,9 @@ install: | vendor
 test: | vendor
 	@go test -v -race -cover ./...
 
+docs: | build/dlg
+	@./build/dlg doc > dlg.md
+
 .PHONEY: clean
 clean:
 	rm -rf build vendor

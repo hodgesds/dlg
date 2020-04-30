@@ -34,4 +34,5 @@ func init() {
 	RootCmd.AddCommand(etcdCmd)
 
 	etcdCmd.PersistentFlags().AddFlagSet(planFlags())
+	etcdCmd.AddCommand(newDocCmd())
 }

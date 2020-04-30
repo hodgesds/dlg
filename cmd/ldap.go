@@ -35,4 +35,5 @@ func init() {
 	RootCmd.AddCommand(ldapCmd)
 
 	ldapCmd.PersistentFlags().AddFlagSet(planFlags())
+	ldapCmd.AddCommand(newDocCmd())
 }

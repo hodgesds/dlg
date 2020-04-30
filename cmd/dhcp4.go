@@ -34,4 +34,5 @@ func init() {
 	RootCmd.AddCommand(dhcp4Cmd)
 
 	dhcp4Cmd.PersistentFlags().AddFlagSet(planFlags())
+	dhcp4Cmd.AddCommand(newDocCmd())
 }

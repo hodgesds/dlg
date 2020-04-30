@@ -34,5 +34,6 @@ var udpCmd = &cobra.Command{
 func init() {
 	RootCmd.AddCommand(udpCmd)
 
-	sshCmd.PersistentFlags().AddFlagSet(planFlags())
+	udpCmd.PersistentFlags().AddFlagSet(planFlags())
+	udpCmd.AddCommand(newDocCmd())
 }

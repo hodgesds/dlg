@@ -52,6 +52,7 @@ var redisGetCmd = &cobra.Command{
 func init() {
 	RootCmd.AddCommand(redisCmd)
 	redisCmd.AddCommand(redisGetCmd)
+	redisCmd.AddCommand(newDocCmd())
 	redisGetCmd.PersistentFlags().AddFlagSet(planFlags())
 	redisCmd.PersistentFlags().StringVar(
 		&redisConf.Addr, "addr",

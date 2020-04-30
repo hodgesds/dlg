@@ -35,4 +35,5 @@ func init() {
 	RootCmd.AddCommand(memcacheCmd)
 
 	memcacheCmd.PersistentFlags().AddFlagSet(planFlags())
+	memcacheCmd.AddCommand(newDocCmd())
 }

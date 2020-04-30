@@ -29,44 +29,41 @@ var (
 	docOutput string
 )
 
-// docCmd represents the docs command
-var docCmd = &cobra.Command{
-	Use:   "doc",
-	Short: "",
-	Long:  ``,
-	Run: func(cmd *cobra.Command, args []string) {
-		var w io.Writer
-		if docOutput == "-" {
-			w = os.Stdout
-		} else {
-			f, err := os.OpenFile(docOutput, os.O_RDWR|os.O_CREATE, 0755)
-			if err != nil {
-				log.Fatal(err)
+func newDocCmd() *cobra.Command {
+	var docCmd = &cobra.Command{
+		Use:   "doc",
+		Short: "doc is used for generating documentation",
+		Long:  ``,
+		Run: func(cmd *cobra.Command, args []string) {
+			var w io.Writer
+			if docOutput == "-" {
+				w = os.Stdout
+			} else {
+				f, err := os.OpenFile(docOutput, os.O_RDWR|os.O_CREATE, 0755)
+				if err != nil {
+					log.Fatal(err)
+				}
+				defer f.Close()
+				w = f
 			}
-			defer f.Close()
-			w = f
-		}
-		switch f := strings.ToLower(docFormat); f {
-		case "md", "markdown":
-			if err := doc.GenMarkdown(cmd, w); err != nil {
-				log.Fatal(err)
+			switch f := strings.ToLower(docFormat); f {
+			case "md", "markdown":
+				if err := doc.GenMarkdown(cmd, w); err != nil {
+					log.Fatal(err)
+				}
+			case "man":
+				header := &doc.GenManHeader{
+					Title:   cmd.Use,
+					Section: "8",
+				}
+				if err := doc.GenMan(cmd, header, w); err != nil {
+					log.Fatal(err)
+				}
+			default:
+				log.Fatalf("Unknown format: %q", f)
 			}
-		case "man":
-			header := &doc.GenManHeader{
-				Title:   cmd.Use,
-				Section: "8",
-			}
-			if err := doc.GenMan(cmd, header, w); err != nil {
-				log.Fatal(err)
-			}
-		default:
-			log.Fatalf("Unknown format: %q", f)
-		}
-	},
-}
-
-func init() {
-	RootCmd.AddCommand(docCmd)
+		},
+	}
 
 	docCmd.PersistentFlags().StringVarP(
 		&docFormat,
@@ -81,4 +78,10 @@ func init() {
 		"-",
 		"Output",
 	)
+
+	return docCmd
+}
+
+func init() {
+	RootCmd.AddCommand(newDocCmd())
 }
