@@ -17,6 +17,7 @@ import (
 	"github.com/hodgesds/dlg/config/ldap"
 	"github.com/hodgesds/dlg/config/memcache"
 	"github.com/hodgesds/dlg/config/redis"
+	"github.com/hodgesds/dlg/config/snmp"
 	"github.com/hodgesds/dlg/config/sql"
 	"github.com/hodgesds/dlg/config/ssh"
 	"github.com/hodgesds/dlg/config/udp"
@@ -104,6 +105,7 @@ type Stage struct {
 	LDAP      *ldap.Config      `yaml:"ldap,omitempty"`
 	Memcache  *memcache.Config  `yaml:"memcache,omitempty"`
 	Redis     *redis.Config     `yaml:"redis,omitempty"`
+	SNMP      *snmp.Config      `yaml:"snmp,omitempty"`
 	SQL       *sql.Config       `yaml:"sql,omitempty"`
 	SSH       *ssh.Config       `yaml:"ssh,omitempty"`
 	UDP       *udp.Config       `yaml:"udp,omitempty"`

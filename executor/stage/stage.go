@@ -26,6 +26,7 @@ type stageExecutor struct {
 	memcache  executor.Memcache
 	redis     executor.Redis
 	sql       executor.SQL
+	snmp      executor.SNMP
 	ssh       executor.SSH
 	udp       executor.UDP
 	websocket executor.Websocket
@@ -42,6 +43,7 @@ type Params struct {
 	Memcache  executor.Memcache
 	Redis     executor.Redis
 	SQL       executor.SQL
+	SNMP      executor.SNMP
 	SSH       executor.SSH
 	UDP       executor.UDP
 	Websocket executor.Websocket
@@ -59,6 +61,7 @@ func New(p Params) executor.Stage {
 		memcache:  p.Memcache,
 		redis:     p.Redis,
 		sql:       p.SQL,
+		snmp:      p.SNMP,
 		ssh:       p.SSH,
 		udp:       p.UDP,
 		websocket: p.Websocket,
@@ -149,6 +152,22 @@ func (e *stageExecutor) Execute(ctx context.Context, s *config.Stage) error {
 			return err
 		}
 	}
+	if s.SNMP != nil {
+		if e.snmp == nil {
+			return ErrNoStageExecutor
+		}
+		if err := e.snmp.Execute(exCtx, s.SNMP); err != nil {
+			return err
+		}
+	}
+	if s.SSH != nil {
+		if e.ssh == nil {
+			return ErrNoStageExecutor
+		}
+		if err := e.ssh.Execute(exCtx, s.SSH); err != nil {
+			return err
+		}
+	}
 	if s.SQL != nil {
 		if e.sql == nil {
 			return ErrNoStageExecutor
@@ -170,14 +189,6 @@ func (e *stageExecutor) Execute(ctx context.Context, s *config.Stage) error {
 			return ErrNoStageExecutor
 		}
 		if err := e.websocket.Execute(exCtx, s.Websocket); err != nil {
-			return err
-		}
-	}
-	if s.SSH != nil {
-		if e.ssh == nil {
-			return ErrNoStageExecutor
-		}
-		if err := e.ssh.Execute(exCtx, s.SSH); err != nil {
 			return err
 		}
 	}

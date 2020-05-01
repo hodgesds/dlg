@@ -12,6 +12,7 @@ import (
 	"github.com/hodgesds/dlg/config/ldap"
 	"github.com/hodgesds/dlg/config/memcache"
 	"github.com/hodgesds/dlg/config/redis"
+	"github.com/hodgesds/dlg/config/snmp"
 	"github.com/hodgesds/dlg/config/sql"
 	"github.com/hodgesds/dlg/config/ssh"
 	"github.com/hodgesds/dlg/config/udp"
@@ -76,6 +77,11 @@ type SQL interface {
 // SSH is used for executing SSH.
 type SSH interface {
 	Execute(context.Context, *ssh.Config) error
+}
+
+// SNMP is used for executing SNMP.
+type SNMP interface {
+	Execute(context.Context, *snmp.Config) error
 }
 
 // UDP is used for executing UDP.
