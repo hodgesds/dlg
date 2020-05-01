@@ -25,6 +25,8 @@ require (
 	github.com/mdlayher/ethernet v0.0.0-20190606142754-0394541c37b7 // indirect
 	github.com/mdlayher/raw v0.0.0-20191009151244-50f2db8cc065 // indirect
 	github.com/prometheus/client_golang v1.5.1
+	github.com/rainycape/memcache v0.0.0-20150622160815-1031fa0ce2f2
+	github.com/soniah/gosnmp v1.25.0
 	github.com/spf13/cobra v1.0.0
 	github.com/spf13/pflag v1.0.3
 	github.com/spf13/viper v1.6.3

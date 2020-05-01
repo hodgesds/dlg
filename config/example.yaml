@@ -69,7 +69,9 @@ plan:
   - name: memcache
     concurrent: false
     repeat: 5
-    memcache: {}
+    memcache:
+      addrs: []
+      ops: []
   - name: redis
     concurrent: false
     repeat: 10

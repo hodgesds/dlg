@@ -32,4 +32,6 @@ var snmpCmd = &cobra.Command{
 
 func init() {
 	RootCmd.AddCommand(snmpCmd)
+	snmpCmd.PersistentFlags().AddFlagSet(planFlags())
+	snmpCmd.AddCommand(newDocCmd())
 }
