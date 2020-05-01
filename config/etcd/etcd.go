@@ -1,6 +1,8 @@
 package etcd
 
 import (
+	"fmt"
+	"strings"
 	"time"
 
 	"go.etcd.io/etcd/clientv3"
@@ -58,6 +60,40 @@ type KV struct {
 	Delete  *Delete  `yaml:"delete,omitempty"`
 	Get     *Get     `yaml:"get,omitempty"`
 	Put     *Put     `yaml:"put,omitempty"`
+}
+
+// ParseKV is used to parse a KV.
+func ParseKV(s string) (*KV, error) {
+	split := strings.Split(s, ":")
+	if len(split) == 1 {
+		return nil, fmt.Errorf("expected command: get,put,delete")
+	}
+	switch split[0] {
+	case "get":
+		return &KV{
+			Get: &Get{
+				Key: split[1],
+			},
+		}, nil
+	case "put":
+		if len(split) != 2 {
+			return nil, fmt.Errorf("invalid put: %q", s)
+		}
+		return &KV{
+			Put: &Put{
+				Key:   split[1],
+				Value: split[2],
+			},
+		}, nil
+	case "delete":
+		return &KV{
+			Delete: &Delete{
+				Key: split[1],
+			},
+		}, nil
+	default:
+		return nil, fmt.Errorf("unknown command: %q", s)
+	}
 }
 
 // Put is an ETCD put KV op.

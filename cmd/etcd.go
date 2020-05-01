@@ -15,9 +15,21 @@
 package cmd
 
 import (
+	"context"
 	"fmt"
+	"log"
 
+	"github.com/hodgesds/dlg/config"
+	etcdconf "github.com/hodgesds/dlg/config/etcd"
+	"github.com/hodgesds/dlg/executor"
+	etcdexec "github.com/hodgesds/dlg/executor/etcd"
+	stageexec "github.com/hodgesds/dlg/executor/stage"
 	"github.com/spf13/cobra"
+)
+
+var (
+	etcdEndpoints = []string{}
+	etcdKeys      = []string{}
 )
 
 // etcdCmd represents the etcd command
@@ -26,12 +38,63 @@ var etcdCmd = &cobra.Command{
 	Short: "etcd load generator",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("etcd called")
+		plan := &config.Plan{
+			Name: name,
+			Tags: tags,
+		}
+		stage := &config.Stage{
+			Name:     fmt.Sprintf("%s-etcd", name),
+			Tags:     tags,
+			Repeat:   repeat,
+			Children: []*config.Stage{},
+		}
+		if dur > 0 {
+			stage.Duration = &dur
+		}
+		for _, key := range etcdKeys {
+			kv, err := etcdconf.ParseKV(key)
+			if err != nil {
+				log.Fatal(err)
+			}
+			stage.Children = append(
+				stage.Children,
+				&config.Stage{
+					ETCD: &etcdconf.Config{
+						Endpoints: etcdEndpoints,
+						KV:        []*etcdconf.KV{kv},
+					},
+				})
+		}
+
+		plan.Stages = []*config.Stage{stage}
+
+		planExec := executor.NewPlan(stageexec.New(
+			stageexec.Params{
+				ETCD: etcdexec.New(),
+			},
+		))
+
+		err := planExec.Execute(context.Background(), plan)
+		if err != nil {
+			log.Fatal(err)
+		}
 	},
 }
 
 func init() {
 	RootCmd.AddCommand(etcdCmd)
+	etcdCmd.PersistentFlags().StringSliceVarP(
+		&etcdEndpoints,
+		"endpoints", "e",
+		[]string{},
+		"ETCD endpoints",
+	)
+	etcdCmd.PersistentFlags().StringSliceVarP(
+		&etcdKeys,
+		"keys", "k",
+		[]string{},
+		"ETCD keys",
+	)
 
 	etcdCmd.PersistentFlags().AddFlagSet(planFlags())
 	etcdCmd.AddCommand(newDocCmd())
