@@ -47,5 +47,6 @@ func (e *dhcp4Executor) Execute(ctx context.Context, config *dhcp4config.Config)
 	if err != nil {
 		return err
 	}
+	fmt.Printf("%+v\n", o)
 	return c.Close()
 }

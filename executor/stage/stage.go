@@ -26,6 +26,7 @@ type stageExecutor struct {
 	memcache  executor.Memcache
 	redis     executor.Redis
 	sql       executor.SQL
+	ssh       executor.SSH
 	udp       executor.UDP
 	websocket executor.Websocket
 }
@@ -41,6 +42,7 @@ type Params struct {
 	Memcache  executor.Memcache
 	Redis     executor.Redis
 	SQL       executor.SQL
+	SSH       executor.SSH
 	UDP       executor.UDP
 	Websocket executor.Websocket
 }
@@ -57,6 +59,7 @@ func New(p Params) executor.Stage {
 		memcache:  p.Memcache,
 		redis:     p.Redis,
 		sql:       p.SQL,
+		ssh:       p.SSH,
 		udp:       p.UDP,
 		websocket: p.Websocket,
 	}
@@ -167,6 +170,14 @@ func (e *stageExecutor) Execute(ctx context.Context, s *config.Stage) error {
 			return ErrNoStageExecutor
 		}
 		if err := e.websocket.Execute(exCtx, s.Websocket); err != nil {
+			return err
+		}
+	}
+	if s.SSH != nil {
+		if e.ssh == nil {
+			return ErrNoStageExecutor
+		}
+		if err := e.ssh.Execute(exCtx, s.SSH); err != nil {
 			return err
 		}
 	}

@@ -95,9 +95,10 @@ plan:
     concurrent: false
     repeat: 5
     ssh:
-      addr: ""
-      user: ""
-      timeout: 0s
+      addr: 127.0.0.1:22
+      user: root
+      keyFile: /home/foo/.ssh/id_rsa
+      cmd: ls /
   - name: udp
     concurrent: false
     repeat: 5

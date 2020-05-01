@@ -17,6 +17,7 @@ import (
 	"github.com/hodgesds/dlg/config/ssh"
 	"github.com/hodgesds/dlg/config/udp"
 	"github.com/hodgesds/dlg/config/websocket"
+	"github.com/hodgesds/dlg/util"
 	"github.com/stretchr/testify/require"
 	"gopkg.in/yaml.v2"
 )
@@ -133,7 +134,12 @@ func TestConfig(t *testing.T) {
 			{
 				Name:   "ssh",
 				Repeat: 5,
-				SSH:    &ssh.Config{},
+				SSH: &ssh.Config{
+					Addr:    "127.0.0.1:22",
+					User:    "root",
+					Cmd:     util.StrPtr("ls /"),
+					KeyFile: "/home/foo/.ssh/id_rsa",
+				},
 			},
 			{
 				Name:   "udp",

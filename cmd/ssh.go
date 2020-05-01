@@ -15,9 +15,24 @@
 package cmd
 
 import (
+	"context"
 	"fmt"
+	"log"
+	"os/user"
 
+	"github.com/hodgesds/dlg/config"
+	sshconf "github.com/hodgesds/dlg/config/ssh"
+	"github.com/hodgesds/dlg/executor"
+	"github.com/hodgesds/dlg/executor/ssh"
+	stageexec "github.com/hodgesds/dlg/executor/stage"
 	"github.com/spf13/cobra"
+)
+
+var (
+	sshAddr    string
+	sshUser    string
+	sshKeyFile string
+	sshExec    string
 )
 
 // sshCmd represents the ssh command
@@ -26,12 +41,76 @@ var sshCmd = &cobra.Command{
 	Short: "ssh load generator",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("ssh called")
+		plan := &config.Plan{
+			Name: name,
+			Tags: tags,
+		}
+		stage := &config.Stage{
+			Name:       fmt.Sprintf("%s-ssh", name),
+			Tags:       tags,
+			Repeat:     repeat,
+			Concurrent: true,
+			Children:   []*config.Stage{},
+			SSH: &sshconf.Config{
+				Addr:    sshAddr,
+				User:    sshUser,
+				KeyFile: sshKeyFile,
+			},
+		}
+		if sshExec != "" {
+			stage.SSH.Cmd = &sshExec
+		}
+		if dur > 0 {
+			stage.Duration = &dur
+		}
+
+		plan.Stages = []*config.Stage{stage}
+
+		planExec := executor.NewPlan(stageexec.New(
+			stageexec.Params{
+				SSH: ssh.New(),
+			},
+		))
+
+		err := planExec.Execute(context.Background(), plan)
+		if err != nil {
+			log.Fatal(err)
+		}
 	},
 }
 
 func init() {
 	RootCmd.AddCommand(sshCmd)
+
+	sshCmd.PersistentFlags().StringVarP(
+		&sshAddr,
+		"addr", "a",
+		"127.0.0.1:22",
+		"SSH remote address",
+	)
+	sshCmd.PersistentFlags().StringVarP(
+		&sshKeyFile,
+		"key", "k",
+		"",
+		"SSH key file",
+	)
+	sshCmd.PersistentFlags().StringVarP(
+		&sshExec,
+		"exec", "e",
+		"",
+		"SSH command",
+	)
+
+	u, err := user.Current()
+	if err == nil {
+		sshUser = u.Username
+	}
+	sshCmd.PersistentFlags().StringVarP(
+		&sshUser,
+		"user", "u",
+		sshUser,
+		"SSH user",
+	)
 
 	sshCmd.PersistentFlags().AddFlagSet(planFlags())
 	sshCmd.AddCommand(newDocCmd())
