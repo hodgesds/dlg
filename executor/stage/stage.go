@@ -102,6 +102,7 @@ func (e *stageExecutor) Execute(ctx context.Context, s *config.Stage) error {
 		if e.dhcp4 == nil {
 			return ErrNoStageExecutor
 		}
+		e.metrics.DHCP4Total.With(prometheus.Labels{"stage": s.Name}).Add(1)
 		if err := e.dhcp4.Execute(exCtx, s.DHCP4); err != nil {
 			return err
 		}
@@ -110,6 +111,7 @@ func (e *stageExecutor) Execute(ctx context.Context, s *config.Stage) error {
 		if e.dns == nil {
 			return ErrNoStageExecutor
 		}
+		e.metrics.DNSTotal.With(prometheus.Labels{"stage": s.Name}).Add(1)
 		if err := e.dns.Execute(exCtx, s.DNS); err != nil {
 			return err
 		}
@@ -118,6 +120,7 @@ func (e *stageExecutor) Execute(ctx context.Context, s *config.Stage) error {
 		if e.etcd == nil {
 			return ErrNoStageExecutor
 		}
+		e.metrics.ETCDTotal.With(prometheus.Labels{"stage": s.Name}).Add(1)
 		if err := e.etcd.Execute(exCtx, s.ETCD); err != nil {
 			return err
 		}
@@ -126,6 +129,7 @@ func (e *stageExecutor) Execute(ctx context.Context, s *config.Stage) error {
 		if e.http == nil {
 			return ErrNoStageExecutor
 		}
+		e.metrics.HTTPTotal.With(prometheus.Labels{"stage": s.Name}).Add(1)
 		if err := e.http.Execute(exCtx, s.HTTP); err != nil {
 			return err
 		}
@@ -134,6 +138,7 @@ func (e *stageExecutor) Execute(ctx context.Context, s *config.Stage) error {
 		if e.kafka == nil {
 			return ErrNoStageExecutor
 		}
+		e.metrics.KafkaTotal.With(prometheus.Labels{"stage": s.Name}).Add(1)
 		if err := e.kafka.Execute(exCtx, s.Kafka); err != nil {
 			return err
 		}
@@ -142,6 +147,7 @@ func (e *stageExecutor) Execute(ctx context.Context, s *config.Stage) error {
 		if e.ldap == nil {
 			return ErrNoStageExecutor
 		}
+		e.metrics.LDAPTotal.With(prometheus.Labels{"stage": s.Name}).Add(1)
 		if err := e.ldap.Execute(exCtx, s.LDAP); err != nil {
 			return err
 		}
@@ -150,6 +156,7 @@ func (e *stageExecutor) Execute(ctx context.Context, s *config.Stage) error {
 		if e.memcache == nil {
 			return ErrNoStageExecutor
 		}
+		e.metrics.MemcacheTotal.With(prometheus.Labels{"stage": s.Name}).Add(1)
 		if err := e.memcache.Execute(exCtx, s.Memcache); err != nil {
 			return err
 		}
@@ -158,6 +165,7 @@ func (e *stageExecutor) Execute(ctx context.Context, s *config.Stage) error {
 		if e.redis == nil {
 			return ErrNoStageExecutor
 		}
+		e.metrics.RedisTotal.With(prometheus.Labels{"stage": s.Name}).Add(1)
 		if err := e.redis.Execute(exCtx, s.Redis); err != nil {
 			return err
 		}
@@ -166,6 +174,7 @@ func (e *stageExecutor) Execute(ctx context.Context, s *config.Stage) error {
 		if e.snmp == nil {
 			return ErrNoStageExecutor
 		}
+		e.metrics.SNMPTotal.With(prometheus.Labels{"stage": s.Name}).Add(1)
 		if err := e.snmp.Execute(exCtx, s.SNMP); err != nil {
 			return err
 		}
@@ -174,6 +183,7 @@ func (e *stageExecutor) Execute(ctx context.Context, s *config.Stage) error {
 		if e.ssh == nil {
 			return ErrNoStageExecutor
 		}
+		e.metrics.SSHTotal.With(prometheus.Labels{"stage": s.Name}).Add(1)
 		if err := e.ssh.Execute(exCtx, s.SSH); err != nil {
 			return err
 		}
@@ -182,6 +192,7 @@ func (e *stageExecutor) Execute(ctx context.Context, s *config.Stage) error {
 		if e.sql == nil {
 			return ErrNoStageExecutor
 		}
+		e.metrics.SQLTotal.With(prometheus.Labels{"stage": s.Name}).Add(1)
 		if err := e.sql.Execute(exCtx, s.SQL); err != nil {
 			return err
 		}
@@ -190,6 +201,7 @@ func (e *stageExecutor) Execute(ctx context.Context, s *config.Stage) error {
 		if e.udp == nil {
 			return ErrNoStageExecutor
 		}
+		e.metrics.UDPTotal.With(prometheus.Labels{"stage": s.Name}).Add(1)
 		if err := e.udp.Execute(exCtx, s.UDP); err != nil {
 			return err
 		}
@@ -198,6 +210,7 @@ func (e *stageExecutor) Execute(ctx context.Context, s *config.Stage) error {
 		if e.websocket == nil {
 			return ErrNoStageExecutor
 		}
+		e.metrics.WebsocketTotal.With(prometheus.Labels{"stage": s.Name}).Add(1)
 		if err := e.websocket.Execute(exCtx, s.Websocket); err != nil {
 			return err
 		}
@@ -216,6 +229,7 @@ func (e *stageExecutor) Execute(ctx context.Context, s *config.Stage) error {
 
 	for _, child := range s.Children {
 		if err := e.Execute(exCtx, child); err != nil {
+			e.metrics.ErrorsTotal.With(prometheus.Labels{"stage": child.Name}).Add(1)
 			return err
 		}
 	}
@@ -239,6 +253,7 @@ func (e *stageExecutor) execParallel(ctx context.Context, stages []*config.Stage
 		go func(stage *config.Stage) {
 			err2 := e.Execute(ctx, stage)
 			if err2 != nil {
+				e.metrics.ErrorsTotal.With(prometheus.Labels{"stage": stage.Name}).Add(1)
 				mu.Lock()
 				err = multierr.Append(err, err2)
 				mu.Unlock()

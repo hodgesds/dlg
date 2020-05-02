@@ -19,6 +19,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"os"
 
 	"github.com/hodgesds/dlg/config"
 	"github.com/hodgesds/dlg/config/http"
@@ -50,7 +51,7 @@ var httpCmd = &cobra.Command{
 		}
 		return nil
 	},
-	RunE: func(cmd *cobra.Command, args []string) error {
+	Run: func(cmd *cobra.Command, args []string) {
 		plan := &config.Plan{
 			Name: name,
 			Tags: tags,
@@ -115,7 +116,10 @@ var httpCmd = &cobra.Command{
 		if err != nil {
 			log.Fatal(err)
 		}
-		return nil
+
+		if err := util.RegistryGather(reg, os.Stdout); err != nil {
+			log.Fatal(err)
+		}
 	},
 }
 

@@ -92,6 +92,10 @@ var sshCmd = &cobra.Command{
 		if err != nil {
 			log.Fatal(err)
 		}
+
+		if err := util.RegistryGather(reg, os.Stdout); err != nil {
+			log.Fatal(err)
+		}
 	},
 }
 
