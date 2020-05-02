@@ -26,7 +26,6 @@ var serverCmd = &cobra.Command{
 	Short: "",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
-
 		r := gin.Default()
 		r.Use(gin.WrapH(xhttp.StageMiddleware(nil)))
 		r.GET("/ping", func(c *gin.Context) {

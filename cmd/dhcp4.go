@@ -25,6 +25,7 @@ import (
 	"github.com/hodgesds/dlg/executor"
 	"github.com/hodgesds/dlg/executor/dhcp4"
 	stageexec "github.com/hodgesds/dlg/executor/stage"
+	"github.com/prometheus/client_golang/prometheus"
 	"github.com/spf13/cobra"
 )
 
@@ -64,11 +65,29 @@ var dhcp4Cmd = &cobra.Command{
 
 		plan.Stages = []*config.Stage{stage}
 
-		planExec := executor.NewPlan(stageexec.New(
+		reg := prometheus.NewPedanticRegistry()
+		reg.MustRegister(
+			prometheus.NewProcessCollector(prometheus.ProcessCollectorOpts{}),
+			prometheus.NewGoCollector(),
+		)
+
+		stageExec, err := stageexec.New(
 			stageexec.Params{
-				DHCP4: dhcp4.New(),
+				Registry: reg,
+				DHCP4:    dhcp4.New(),
 			},
-		))
+		)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		planExec, err := executor.NewPlan(
+			executor.Params{Registry: reg},
+			stageExec,
+		)
+		if err != nil {
+			log.Fatal(err)
+		}
 
 		err = planExec.Execute(context.Background(), plan)
 		if err != nil {

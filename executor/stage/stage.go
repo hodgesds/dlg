@@ -7,6 +7,7 @@ import (
 
 	"github.com/hodgesds/dlg/config"
 	"github.com/hodgesds/dlg/executor"
+	"github.com/prometheus/client_golang/prometheus"
 	"go.uber.org/multierr"
 )
 
@@ -17,6 +18,8 @@ var (
 )
 
 type stageExecutor struct {
+	metrics *metrics
+
 	dhcp4     executor.DHCP4
 	dns       executor.DNS
 	etcd      executor.ETCD
@@ -34,6 +37,8 @@ type stageExecutor struct {
 
 // Params is used for configuring a Stage executor.
 type Params struct {
+	Registry *prometheus.Registry
+
 	DHCP4     executor.DHCP4
 	DNS       executor.DNS
 	ETCD      executor.ETCD
@@ -50,8 +55,13 @@ type Params struct {
 }
 
 // New returns a new Stage executor.
-func New(p Params) executor.Stage {
+func New(p Params) (executor.Stage, error) {
+	metrics, err := newMetrics(p.Registry)
+	if err != nil {
+		return nil, err
+	}
 	return &stageExecutor{
+		metrics:   metrics,
 		dhcp4:     p.DHCP4,
 		dns:       p.DNS,
 		etcd:      p.ETCD,
@@ -65,7 +75,7 @@ func New(p Params) executor.Stage {
 		ssh:       p.SSH,
 		udp:       p.UDP,
 		websocket: p.Websocket,
-	}
+	}, nil
 }
 
 // Execute implements the Stage interface.
