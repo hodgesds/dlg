@@ -19,12 +19,14 @@ import (
 	"fmt"
 	"log"
 	"net"
+	"os"
 
 	"github.com/hodgesds/dlg/config"
 	dhcp4conf "github.com/hodgesds/dlg/config/dhcp4"
 	"github.com/hodgesds/dlg/executor"
 	"github.com/hodgesds/dlg/executor/dhcp4"
 	stageexec "github.com/hodgesds/dlg/executor/stage"
+	"github.com/hodgesds/dlg/util"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/spf13/cobra"
 )
@@ -66,10 +68,6 @@ var dhcp4Cmd = &cobra.Command{
 		plan.Stages = []*config.Stage{stage}
 
 		reg := prometheus.NewPedanticRegistry()
-		reg.MustRegister(
-			prometheus.NewProcessCollector(prometheus.ProcessCollectorOpts{}),
-			prometheus.NewGoCollector(),
-		)
 
 		stageExec, err := stageexec.New(
 			stageexec.Params{

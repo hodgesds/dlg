@@ -89,10 +89,6 @@ var httpCmd = &cobra.Command{
 		plan.Stages = []*config.Stage{stage}
 
 		reg := prometheus.NewPedanticRegistry()
-		reg.MustRegister(
-			prometheus.NewProcessCollector(prometheus.ProcessCollectorOpts{}),
-			prometheus.NewGoCollector(),
-		)
 
 		stageExec, err := stageexec.New(
 			stageexec.Params{

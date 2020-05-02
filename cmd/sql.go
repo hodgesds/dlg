@@ -18,12 +18,14 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"os"
 
 	"github.com/hodgesds/dlg/config"
 	sqlconf "github.com/hodgesds/dlg/config/sql"
 	"github.com/hodgesds/dlg/executor"
 	sqlexec "github.com/hodgesds/dlg/executor/sql"
 	stageexec "github.com/hodgesds/dlg/executor/stage"
+	"github.com/hodgesds/dlg/util"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/spf13/cobra"
 )
@@ -82,10 +84,6 @@ var sqlCmd = &cobra.Command{
 		plan.Stages = []*config.Stage{stage}
 
 		reg := prometheus.NewPedanticRegistry()
-		reg.MustRegister(
-			prometheus.NewProcessCollector(prometheus.ProcessCollectorOpts{}),
-			prometheus.NewGoCollector(),
-		)
 
 		stageExec, err := stageexec.New(
 			stageexec.Params{

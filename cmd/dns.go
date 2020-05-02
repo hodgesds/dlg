@@ -18,12 +18,14 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"os"
 
 	"github.com/hodgesds/dlg/config"
 	dnsconfig "github.com/hodgesds/dlg/config/dns"
 	"github.com/hodgesds/dlg/executor"
 	dnsexec "github.com/hodgesds/dlg/executor/dns"
 	stageexec "github.com/hodgesds/dlg/executor/stage"
+	"github.com/hodgesds/dlg/util"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/spf13/cobra"
 )
@@ -63,10 +65,6 @@ var dnsCmd = &cobra.Command{
 		plan.Stages = []*config.Stage{stage}
 
 		reg := prometheus.NewPedanticRegistry()
-		reg.MustRegister(
-			prometheus.NewProcessCollector(prometheus.ProcessCollectorOpts{}),
-			prometheus.NewGoCollector(),
-		)
 
 		stageExec, err := stageexec.New(
 			stageexec.Params{

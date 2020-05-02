@@ -18,12 +18,14 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"os"
 
 	"github.com/hodgesds/dlg/config"
 	etcdconf "github.com/hodgesds/dlg/config/etcd"
 	"github.com/hodgesds/dlg/executor"
 	etcdexec "github.com/hodgesds/dlg/executor/etcd"
 	stageexec "github.com/hodgesds/dlg/executor/stage"
+	"github.com/hodgesds/dlg/util"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/spf13/cobra"
 )
@@ -70,10 +72,6 @@ var etcdCmd = &cobra.Command{
 		plan.Stages = []*config.Stage{stage}
 
 		reg := prometheus.NewPedanticRegistry()
-		reg.MustRegister(
-			prometheus.NewProcessCollector(prometheus.ProcessCollectorOpts{}),
-			prometheus.NewGoCollector(),
-		)
 
 		stageExec, err := stageexec.New(
 			stageexec.Params{

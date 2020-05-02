@@ -18,6 +18,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"os"
 	"os/user"
 
 	"github.com/hodgesds/dlg/config"
@@ -25,6 +26,7 @@ import (
 	"github.com/hodgesds/dlg/executor"
 	"github.com/hodgesds/dlg/executor/ssh"
 	stageexec "github.com/hodgesds/dlg/executor/stage"
+	"github.com/hodgesds/dlg/util"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/spf13/cobra"
 )
@@ -68,10 +70,6 @@ var sshCmd = &cobra.Command{
 		plan.Stages = []*config.Stage{stage}
 
 		reg := prometheus.NewPedanticRegistry()
-		reg.MustRegister(
-			prometheus.NewProcessCollector(prometheus.ProcessCollectorOpts{}),
-			prometheus.NewGoCollector(),
-		)
 
 		stageExec, err := stageexec.New(
 			stageexec.Params{
