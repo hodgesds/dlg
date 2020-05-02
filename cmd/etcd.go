@@ -15,17 +15,13 @@
 package cmd
 
 import (
-	"context"
 	"fmt"
 	"log"
-	"os"
 
 	"github.com/hodgesds/dlg/config"
 	etcdconf "github.com/hodgesds/dlg/config/etcd"
-	"github.com/hodgesds/dlg/executor"
 	etcdexec "github.com/hodgesds/dlg/executor/etcd"
 	stageexec "github.com/hodgesds/dlg/executor/stage"
-	"github.com/hodgesds/dlg/util"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/spf13/cobra"
 )
@@ -83,22 +79,7 @@ var etcdCmd = &cobra.Command{
 			log.Fatal(err)
 		}
 
-		planExec, err := executor.NewPlan(
-			executor.Params{Registry: reg},
-			stageExec,
-		)
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		err = planExec.Execute(context.Background(), plan)
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		if err := util.RegistryGather(reg, os.Stdout); err != nil {
-			log.Fatal(err)
-		}
+		execPlan(plan, reg, stageExec)
 	},
 }
 

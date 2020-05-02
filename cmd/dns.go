@@ -15,17 +15,13 @@
 package cmd
 
 import (
-	"context"
 	"fmt"
 	"log"
-	"os"
 
 	"github.com/hodgesds/dlg/config"
 	dnsconfig "github.com/hodgesds/dlg/config/dns"
-	"github.com/hodgesds/dlg/executor"
 	dnsexec "github.com/hodgesds/dlg/executor/dns"
 	stageexec "github.com/hodgesds/dlg/executor/stage"
-	"github.com/hodgesds/dlg/util"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/spf13/cobra"
 )
@@ -36,33 +32,21 @@ var dnsCmd = &cobra.Command{
 	Short: "dns load generator",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
-		plan := &config.Plan{
-			Name: name,
-			Tags: tags,
-		}
-		stage := &config.Stage{
-			Name:       fmt.Sprintf("%s-http", name),
-			Tags:       tags,
-			Repeat:     repeat,
-			Concurrent: true,
-			Children:   []*config.Stage{},
-		}
-		if dur > 0 {
-			stage.Duration = &dur
-		}
+		plan := defaultPlan("dns")
 
+		children := []*config.Stage{}
 		for i, arg := range args {
 			child := &config.Stage{
-				Name: fmt.Sprintf("%s-%d", stage.Name, i),
+				Name: fmt.Sprintf("%s-%d", plan.Stages[0].Name, i),
 				Tags: tags,
 				DNS: &dnsconfig.Config{
 					ResourceRecords: []string{arg},
 				},
 			}
-			stage.Children = append(stage.Children, child)
+			children = append(children, child)
 		}
 
-		plan.Stages = []*config.Stage{stage}
+		plan.Stages[0].Children = children
 
 		reg := prometheus.NewPedanticRegistry()
 
@@ -76,25 +60,7 @@ var dnsCmd = &cobra.Command{
 			log.Fatal(err)
 		}
 
-		planExec, err := executor.NewPlan(
-			executor.Params{Registry: reg},
-			stageExec,
-		)
-		if err != nil {
-			log.Fatal(err)
-		}
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		err = planExec.Execute(context.Background(), plan)
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		if err := util.RegistryGather(reg, os.Stdout); err != nil {
-			log.Fatal(err)
-		}
+		execPlan(plan, reg, stageExec)
 	},
 }
 

@@ -4,7 +4,8 @@ import "github.com/prometheus/client_golang/prometheus"
 
 // metrics contains metrics.
 type metrics struct {
-	StagesTotal *prometheus.CounterVec
+	StagesTotal   *prometheus.CounterVec
+	StageDuration *prometheus.HistogramVec
 }
 
 func newMetrics(reg *prometheus.Registry) (*metrics, error) {
@@ -15,6 +16,17 @@ func newMetrics(reg *prometheus.Registry) (*metrics, error) {
 			Name:      "stages_total",
 			Help:      "The total number of stages.",
 		}, []string{"stage"}),
+		StageDuration: prometheus.NewHistogramVec(prometheus.HistogramOpts{
+			Namespace: "executor",
+			Subsystem: "plan",
+			Name:      "stage_duration",
+			Help:      "The duration of stages.",
+		}, []string{"stage"}),
 	}
-	return m, reg.Register(m.StagesTotal)
+
+	reg.MustRegister(
+		m.StagesTotal,
+		m.StageDuration,
+	)
+	return m, nil
 }

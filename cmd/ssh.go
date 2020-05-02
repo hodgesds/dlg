@@ -15,18 +15,12 @@
 package cmd
 
 import (
-	"context"
-	"fmt"
 	"log"
-	"os"
 	"os/user"
 
-	"github.com/hodgesds/dlg/config"
 	sshconf "github.com/hodgesds/dlg/config/ssh"
-	"github.com/hodgesds/dlg/executor"
 	"github.com/hodgesds/dlg/executor/ssh"
 	stageexec "github.com/hodgesds/dlg/executor/stage"
-	"github.com/hodgesds/dlg/util"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/spf13/cobra"
 )
@@ -44,30 +38,15 @@ var sshCmd = &cobra.Command{
 	Short: "ssh load generator",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
-		plan := &config.Plan{
-			Name: name,
-			Tags: tags,
-		}
-		stage := &config.Stage{
-			Name:       fmt.Sprintf("%s-ssh", name),
-			Tags:       tags,
-			Repeat:     repeat,
-			Concurrent: true,
-			Children:   []*config.Stage{},
-			SSH: &sshconf.Config{
-				Addr:    sshAddr,
-				User:    sshUser,
-				KeyFile: sshKeyFile,
-			},
+		plan := defaultPlan("ssh")
+		plan.Stages[0].SSH = &sshconf.Config{
+			Addr:    sshAddr,
+			User:    sshUser,
+			KeyFile: sshKeyFile,
 		}
 		if sshExec != "" {
-			stage.SSH.Cmd = &sshExec
+			plan.Stages[0].SSH.Cmd = &sshExec
 		}
-		if dur > 0 {
-			stage.Duration = &dur
-		}
-
-		plan.Stages = []*config.Stage{stage}
 
 		reg := prometheus.NewPedanticRegistry()
 
@@ -77,23 +56,11 @@ var sshCmd = &cobra.Command{
 				SSH:      ssh.New(),
 			},
 		)
-
-		planExec, err := executor.NewPlan(
-			executor.Params{Registry: reg},
-			stageExec,
-		)
 		if err != nil {
 			log.Fatal(err)
 		}
 
-		err = planExec.Execute(context.Background(), plan)
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		if err := util.RegistryGather(reg, os.Stdout); err != nil {
-			log.Fatal(err)
-		}
+		execPlan(plan, reg, stageExec)
 	},
 }
 

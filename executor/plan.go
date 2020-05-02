@@ -46,8 +46,13 @@ func (e *planExecutor) Execute(ctx context.Context, p *config.Plan) error {
 	defer cancel()
 
 	for _, stage := range p.Stages {
-		e.metrics.StagesTotal.With(prometheus.Labels{"stage": stage.Name}).Add(1)
-		if err := e.stage.Execute(ctx, stage); err != nil {
+		e.metrics.StagesTotal.WithLabelValues(p.Name).Add(1)
+		timer := prometheus.NewTimer(
+			e.metrics.StageDuration.WithLabelValues(stage.Name),
+		)
+		err := e.stage.Execute(ctx, stage)
+		timer.ObserveDuration()
+		if err != nil {
 			return err
 		}
 	}

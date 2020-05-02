@@ -15,15 +15,12 @@
 package cmd
 
 import (
-	"context"
 	"errors"
 	"fmt"
 	"log"
-	"os"
 
 	"github.com/hodgesds/dlg/config"
 	"github.com/hodgesds/dlg/config/http"
-	"github.com/hodgesds/dlg/executor"
 	httpexec "github.com/hodgesds/dlg/executor/http"
 	stageexec "github.com/hodgesds/dlg/executor/stage"
 	"github.com/hodgesds/dlg/util"
@@ -52,23 +49,10 @@ var httpCmd = &cobra.Command{
 		return nil
 	},
 	Run: func(cmd *cobra.Command, args []string) {
-		plan := &config.Plan{
-			Name: name,
-			Tags: tags,
-		}
-		stage := &config.Stage{
-			Name:       fmt.Sprintf("%s-http", name),
-			Tags:       tags,
-			Repeat:     repeat,
-			Concurrent: true,
-			Children:   []*config.Stage{},
-		}
-		if dur > 0 {
-			stage.Duration = &dur
-		}
+		plan := defaultPlan("http")
 		for i, arg := range args {
 			child := &config.Stage{
-				Name: fmt.Sprintf("%s-%d", stage.Name, i),
+				Name: fmt.Sprintf("%s-%d", plan.Stages[0].Name, i),
 				Tags: tags,
 				HTTP: &http.Config{
 					Payload: http.Payload{
@@ -83,39 +67,22 @@ var httpCmd = &cobra.Command{
 			if httpConf.Payload.BodyFile != nil && *httpConf.Payload.BodyFile != "" {
 				child.HTTP.Payload.BodyFile = httpConf.Payload.BodyFile
 			}
-			stage.Children = append(stage.Children, child)
+			plan.Stages[0].Children = append(plan.Stages[0].Children, child)
 		}
-
-		plan.Stages = []*config.Stage{stage}
 
 		reg := prometheus.NewPedanticRegistry()
 
 		stageExec, err := stageexec.New(
 			stageexec.Params{
 				Registry: reg,
-				HTTP:     httpexec.New(),
+				HTTP:     httpexec.New(reg),
 			},
 		)
 		if err != nil {
 			log.Fatal(err)
 		}
 
-		planExec, err := executor.NewPlan(
-			executor.Params{Registry: reg},
-			stageExec,
-		)
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		err = planExec.Execute(context.Background(), plan)
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		if err := util.RegistryGather(reg, os.Stdout); err != nil {
-			log.Fatal(err)
-		}
+		execPlan(plan, reg, stageExec)
 	},
 }
 

@@ -109,5 +109,22 @@ func newMetrics(reg *prometheus.Registry) (*metrics, error) {
 			Help:      "The total number of Websocket stages.",
 		}, []string{"stage"}),
 	}
-	return m, reg.Register(m.ErrorsTotal)
+	reg.MustRegister(
+		m.ErrorsTotal,
+		m.DHCP4Total,
+		m.DNSTotal,
+		m.ETCDTotal,
+		m.HTTPTotal,
+		m.KafkaTotal,
+		m.LDAPTotal,
+		m.MemcacheTotal,
+		m.RedisTotal,
+		m.SQLTotal,
+		m.SSHTotal,
+		m.SNMPTotal,
+		m.UDPTotal,
+		m.WebsocketTotal,
+	)
+
+	return m, nil
 }

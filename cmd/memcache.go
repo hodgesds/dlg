@@ -16,17 +16,77 @@ package cmd
 
 import (
 	"fmt"
+	"log"
 
+	"github.com/hodgesds/dlg/config"
+	memcacheconfig "github.com/hodgesds/dlg/config/memcache"
+	memcacheexec "github.com/hodgesds/dlg/executor/memcache"
+	stageexec "github.com/hodgesds/dlg/executor/stage"
+	"github.com/prometheus/client_golang/prometheus"
 	"github.com/spf13/cobra"
 )
 
-// memcacheCmd represents the memcache command
+var (
+	memcacheEndpoint = []string{}
+)
+
+// memcacheCmd represents the memcache command.
 var memcacheCmd = &cobra.Command{
 	Use:   "memcache",
 	Short: "memcache load generator",
 	Long:  ``,
+}
+
+// memcacheGetCmd represents the memcache get command.
+var memcacheGetCmd = &cobra.Command{
+	Use:   "get",
+	Short: "memcache get generator",
+	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("memcache called")
+		plan := &config.Plan{
+			Name: name,
+			Tags: tags,
+		}
+		stage := &config.Stage{
+			Name:       fmt.Sprintf("%s-memcache", name),
+			Tags:       tags,
+			Repeat:     repeat,
+			Concurrent: true,
+			Children:   []*config.Stage{},
+		}
+		if dur > 0 {
+			stage.Duration = &dur
+		}
+
+		ops := []*memcacheconfig.Op{}
+		for _, arg := range args {
+			ops = append(ops, &memcacheconfig.Op{
+				Get: &memcacheconfig.Get{
+					Key: arg,
+				},
+			},
+			)
+		}
+		stage.Memcache = &memcacheconfig.Config{
+			Addrs: memcacheEndpoint,
+			Ops:   ops,
+		}
+
+		plan.Stages = []*config.Stage{stage}
+
+		reg := prometheus.NewPedanticRegistry()
+
+		stageExec, err := stageexec.New(
+			stageexec.Params{
+				Registry: reg,
+				Memcache: memcacheexec.New(),
+			},
+		)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		execPlan(plan, reg, stageExec)
 	},
 }
 
@@ -34,5 +94,14 @@ func init() {
 	RootCmd.AddCommand(memcacheCmd)
 
 	memcacheCmd.PersistentFlags().AddFlagSet(planFlags())
+	memcacheCmd.PersistentFlags().StringSliceVarP(
+		&memcacheEndpoint,
+		"endpoint", "e",
+		[]string{},
+		"Memcache endpoint(s)",
+	)
+	memcacheCmd.MarkFlagRequired("endpoint")
+
 	memcacheCmd.AddCommand(newDocCmd())
+	memcacheCmd.AddCommand(memcacheGetCmd)
 }

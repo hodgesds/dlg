@@ -15,18 +15,12 @@
 package cmd
 
 import (
-	"context"
-	"fmt"
 	"log"
 	"net"
-	"os"
 
-	"github.com/hodgesds/dlg/config"
 	dhcp4conf "github.com/hodgesds/dlg/config/dhcp4"
-	"github.com/hodgesds/dlg/executor"
 	"github.com/hodgesds/dlg/executor/dhcp4"
 	stageexec "github.com/hodgesds/dlg/executor/stage"
-	"github.com/hodgesds/dlg/util"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/spf13/cobra"
 )
@@ -46,26 +40,11 @@ var dhcp4Cmd = &cobra.Command{
 		if err != nil {
 			log.Fatal(err)
 		}
-		plan := &config.Plan{
-			Name: name,
-			Tags: tags,
+		plan := defaultPlan("dhcp4")
+		plan.Stages[0].DHCP4 = &dhcp4conf.Config{
+			Iface:  dhcp4Iface,
+			HwAddr: addr,
 		}
-		stage := &config.Stage{
-			Name:       fmt.Sprintf("%s-dhcp4", name),
-			Tags:       tags,
-			Repeat:     repeat,
-			Concurrent: true,
-			Children:   []*config.Stage{},
-			DHCP4: &dhcp4conf.Config{
-				Iface:  dhcp4Iface,
-				HwAddr: addr,
-			},
-		}
-		if dur > 0 {
-			stage.Duration = &dur
-		}
-
-		plan.Stages = []*config.Stage{stage}
 
 		reg := prometheus.NewPedanticRegistry()
 
@@ -78,23 +57,7 @@ var dhcp4Cmd = &cobra.Command{
 		if err != nil {
 			log.Fatal(err)
 		}
-
-		planExec, err := executor.NewPlan(
-			executor.Params{Registry: reg},
-			stageExec,
-		)
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		err = planExec.Execute(context.Background(), plan)
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		if err := util.RegistryGather(reg, os.Stdout); err != nil {
-			log.Fatal(err)
-		}
+		execPlan(plan, reg, stageExec)
 	},
 }
 
