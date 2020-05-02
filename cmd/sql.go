@@ -38,24 +38,10 @@ var sqlCmd = &cobra.Command{
 	Short: "SQL load generator",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
-		plan := &config.Plan{
-			Name: name,
-			Tags: tags,
-		}
-		stage := &config.Stage{
-			Name:       fmt.Sprintf("%s-http", name),
-			Tags:       tags,
-			Repeat:     repeat,
-			Concurrent: true,
-			Children:   []*config.Stage{},
-		}
-		if dur > 0 {
-			stage.Duration = &dur
-		}
-
+		plan := defaultPlan("sql")
 		for i, arg := range args {
 			child := &config.Stage{
-				Name: fmt.Sprintf("%s-%d", stage.Name, i),
+				Name: fmt.Sprintf("%s-%d", plan.Stages[0].Name, i),
 				Tags: tags,
 				SQL: &sqlconf.Config{
 					Payloads: []*sqlconf.Payload{
@@ -74,10 +60,8 @@ var sqlCmd = &cobra.Command{
 			if sqlPgDSN != "" {
 				child.SQL.PostgresDSN = sqlPgDSN
 			}
-			stage.Children = append(stage.Children, child)
+			plan.Stages[0].Children = append(plan.Stages[0].Children, child)
 		}
-
-		plan.Stages = []*config.Stage{stage}
 
 		reg := prometheus.NewPedanticRegistry()
 

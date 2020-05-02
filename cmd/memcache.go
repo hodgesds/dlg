@@ -117,6 +117,44 @@ var memcacheGetCmd = &cobra.Command{
 	},
 }
 
+// memcacheDeleteCmd represents the memcache get command.
+var memcacheDeleteCmd = &cobra.Command{
+	Use:   "delete",
+	Short: "memcache delete generator",
+	Long:  ``,
+	Run: func(cmd *cobra.Command, args []string) {
+		plan := defaultPlan("memcache")
+
+		ops := []*memcacheconfig.Op{}
+		for _, arg := range args {
+			ops = append(ops, &memcacheconfig.Op{
+				Delete: &memcacheconfig.Delete{
+					Key: arg,
+				},
+			},
+			)
+		}
+		plan.Stages[0].Memcache = &memcacheconfig.Config{
+			Addrs: memcacheEndpoint,
+			Ops:   ops,
+		}
+
+		reg := prometheus.NewPedanticRegistry()
+
+		stageExec, err := stageexec.New(
+			stageexec.Params{
+				Registry: reg,
+				Memcache: memcacheexec.New(),
+			},
+		)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		execPlan(plan, reg, stageExec)
+	},
+}
+
 func init() {
 	RootCmd.AddCommand(memcacheCmd)
 
@@ -132,4 +170,5 @@ func init() {
 	memcacheCmd.AddCommand(newDocCmd())
 	memcacheCmd.AddCommand(memcacheGetCmd)
 	memcacheCmd.AddCommand(memcacheSetCmd)
+	memcacheCmd.AddCommand(memcacheDeleteCmd)
 }
