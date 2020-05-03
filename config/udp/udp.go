@@ -11,7 +11,7 @@ type Config struct {
 	Endpoint      string  `yaml:"endpoint"`
 	Payload       []byte  `yaml:"payload,omitempty"`
 	PayloadFile   *string `yaml:"payloadFile,omitempty"`
-	PayloadBase64 *string `yaml:"payloadBase64"`
+	PayloadBase64 *string `yaml:"payloadBase64,omitempty"`
 }
 
 // Conn is used to return a UDP conn.

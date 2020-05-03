@@ -2,6 +2,7 @@ package config
 
 import (
 	"io/ioutil"
+	"net"
 	"testing"
 	"time"
 
@@ -23,6 +24,8 @@ import (
 )
 
 func TestConfig(t *testing.T) {
+	macAddr, err := net.ParseMAC("00:00:5e:00:53:01")
+	require.NoError(t, err)
 	p := Plan{
 		Name:      "test plan",
 		Executors: 1,
@@ -30,12 +33,17 @@ func TestConfig(t *testing.T) {
 			{
 				Name:   "dhcp4",
 				Repeat: 5,
-				DHCP4:  &dhcp4.Config{},
+				DHCP4: &dhcp4.Config{
+					Iface:  "eth0",
+					HwAddr: dhcp4.HwAddr{macAddr},
+				},
 			},
 			{
 				Name:   "dns",
 				Repeat: 5,
-				DNS:    &dns.Config{},
+				DNS: &dns.Config{
+					Endpoints: []string{"127.0.0.1:53"},
+				},
 			},
 			{
 				Name:   "etcd",
@@ -99,9 +107,29 @@ func TestConfig(t *testing.T) {
 				LDAP:   &ldap.Config{},
 			},
 			{
-				Name:     "memcache",
-				Repeat:   5,
-				Memcache: &memcache.Config{},
+				Name:   "memcache",
+				Repeat: 5,
+				Memcache: &memcache.Config{
+					Addrs: []string{"127.0.0.1:11211"},
+					Ops: []*memcache.Op{
+						{
+							Set: &memcache.Set{
+								Key:   "foo",
+								Value: "baz",
+							},
+						},
+						{
+							Get: &memcache.Get{
+								Key: "foo",
+							},
+						},
+						{
+							Delete: &memcache.Delete{
+								Key: "bar",
+							},
+						},
+					},
+				},
 			},
 			{
 				Name:   "redis",

@@ -6,5 +6,5 @@ package dns
 type Config struct {
 	Endpoints       []string `yaml:"endpoints"`
 	ResourceRecords []string `yaml:"resourceRecords"`
-	TimeoutSec      int      `yaml:"timeoutSec"`
+	TimeoutSec      int      `yaml:"timeoutSec,omitempty"`
 }

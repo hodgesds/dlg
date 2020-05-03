@@ -6,17 +6,21 @@ plan:
     concurrent: false
     repeat: 5
     dhcp4:
-      iface: ""
-      hwaddr: []
-      retry: null
-      timeout: null
+      iface: eth0
+      addr:
+      - 0
+      - 0
+      - 94
+      - 0
+      - 83
+      - 1
   - name: dns
     concurrent: false
     repeat: 5
     dns:
-      endpoints: []
+      endpoints:
+      - 127.0.0.1:53
       resourceRecords: []
-      timeoutSec: 0
   - name: etcd
     concurrent: false
     repeat: 5
@@ -70,8 +74,16 @@ plan:
     concurrent: false
     repeat: 5
     memcache:
-      addrs: []
-      ops: []
+      addrs:
+      - 127.0.0.1:11211
+      ops:
+      - set:
+          key: foo
+          value: baz
+      - get:
+          key: foo
+      - delete:
+          key: bar
   - name: redis
     concurrent: false
     repeat: 10
@@ -106,7 +118,6 @@ plan:
     repeat: 5
     udp:
       endpoint: ""
-      payloadBase64: null
   - name: websocket
     concurrent: false
     repeat: 5

@@ -43,7 +43,7 @@ var dhcp4Cmd = &cobra.Command{
 		plan := defaultPlan("dhcp4")
 		plan.Stages[0].DHCP4 = &dhcp4conf.Config{
 			Iface:  dhcp4Iface,
-			HwAddr: addr,
+			HwAddr: dhcp4conf.HwAddr{addr},
 		}
 
 		reg := prometheus.NewPedanticRegistry()

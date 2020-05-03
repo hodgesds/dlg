@@ -21,8 +21,33 @@ import (
 
 // Config is used for configuring DHCP4 client.
 type Config struct {
-	Iface   string
-	HwAddr  net.HardwareAddr
-	Retry   *int
-	Timeout *time.Duration
+	Iface   string         `yaml:"iface"`
+	HwAddr  HwAddr         `yaml:"hwAddr,inline"`
+	Retry   *int           `yaml:"retry,omitempty"`
+	Timeout *time.Duration `yaml:"timeout,omitempty"`
+}
+
+// HwAddr is a hardware address.
+type HwAddr struct {
+	Addr net.HardwareAddr
+}
+
+// UnmarshalYAML implements the yaml unmarshal interface.
+func (a *HwAddr) UnmarshalYAML(unmarshal func(interface{}) error) error {
+	var buf string
+	err := unmarshal(&buf)
+	if err != nil {
+		return err
+	}
+	newA, err := net.ParseMAC(buf)
+	if err != nil {
+		return err
+	}
+	a.Addr = newA
+	return nil
+}
+
+// MarshalYAML implements the yaml marshal interface.
+func (a *HwAddr) MarshalYAML() (interface{}, error) {
+	return a.Addr.String(), nil
 }

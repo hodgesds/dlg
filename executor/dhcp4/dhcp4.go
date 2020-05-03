@@ -39,6 +39,9 @@ func (e *dhcp4Executor) Execute(ctx context.Context, config *dhcp4config.Config)
 	if config.Timeout != nil {
 		opts = append(opts, nclient4.WithTimeout(*config.Timeout))
 	}
+	if config.HwAddr.Addr != nil {
+		opts = append(opts, nclient4.WithHWAddr(config.HwAddr.Addr))
+	}
 	c, err := nclient4.New(config.Iface, opts...)
 	if err != nil {
 		return err
