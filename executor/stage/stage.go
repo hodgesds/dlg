@@ -7,6 +7,19 @@ import (
 
 	"github.com/hodgesds/dlg/config"
 	"github.com/hodgesds/dlg/executor"
+	"github.com/hodgesds/dlg/executor/dhcp4"
+	"github.com/hodgesds/dlg/executor/dns"
+	"github.com/hodgesds/dlg/executor/etcd"
+	"github.com/hodgesds/dlg/executor/http"
+	"github.com/hodgesds/dlg/executor/kafka"
+	"github.com/hodgesds/dlg/executor/ldap"
+	"github.com/hodgesds/dlg/executor/memcache"
+	"github.com/hodgesds/dlg/executor/redis"
+	"github.com/hodgesds/dlg/executor/snmp"
+	"github.com/hodgesds/dlg/executor/sql"
+	"github.com/hodgesds/dlg/executor/ssh"
+	"github.com/hodgesds/dlg/executor/udp"
+	"github.com/hodgesds/dlg/executor/websocket"
 	"github.com/prometheus/client_golang/prometheus"
 	"go.uber.org/multierr"
 )
@@ -75,6 +88,30 @@ func New(p Params) (executor.Stage, error) {
 		ssh:       p.SSH,
 		udp:       p.UDP,
 		websocket: p.Websocket,
+	}, nil
+}
+
+// Default returns a default Stage executor.
+func Default(reg *prometheus.Registry) (executor.Stage, error) {
+	metrics, err := newMetrics(reg)
+	if err != nil {
+		return nil, err
+	}
+	return &stageExecutor{
+		metrics:   metrics,
+		dhcp4:     dhcp4.New(),
+		dns:       dns.New(),
+		etcd:      etcd.New(),
+		http:      http.New(reg),
+		kafka:     kafka.New(),
+		ldap:      ldap.New(),
+		memcache:  memcache.New(),
+		redis:     redis.New(),
+		sql:       sql.New(),
+		snmp:      snmp.New(),
+		ssh:       ssh.New(),
+		udp:       udp.New(),
+		websocket: websocket.New(),
 	}, nil
 }
 

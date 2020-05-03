@@ -15,9 +15,22 @@
 package cmd
 
 import (
+	"context"
+	"log"
+
 	"github.com/gin-gonic/gin"
+	"github.com/hodgesds/dlg"
+	etcdconf "github.com/hodgesds/dlg/config/etcd"
+	"github.com/hodgesds/dlg/executor"
+	"github.com/hodgesds/dlg/executor/stage"
+	"github.com/hodgesds/dlg/manager/etcd"
 	xhttp "github.com/hodgesds/dlg/util/http"
+	"github.com/prometheus/client_golang/prometheus"
 	"github.com/spf13/cobra"
+)
+
+var (
+	serverHTTPBind string
 )
 
 // serverCmd represents the server command
@@ -26,18 +39,51 @@ var serverCmd = &cobra.Command{
 	Short: "",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
+		reg := prometheus.NewPedanticRegistry()
+		stageExec, err := stage.Default(reg)
+		if err != nil {
+			log.Fatal(err)
+		}
+		planExec, err := executor.NewPlan(
+			executor.Params{Registry: reg},
+			stageExec,
+		)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		managerConfig := &etcdconf.Config{
+			Endpoints: etcdEndpoints,
+		}
+		m, err := etcd.NewManager(managerConfig, planExec)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		p := defaultPlan("server")
+		m.Add(context.Background(), p)
+
 		r := gin.Default()
+		dlg.NewManagerRouter(r, m)
+
 		r.Use(gin.WrapH(xhttp.StageMiddleware(nil)))
 		r.GET("/ping", func(c *gin.Context) {
 			c.JSON(200, gin.H{
 				"message": "pong",
 			})
 		})
-		r.Run(":8333")
+		r.Run(serverHTTPBind)
 	},
 }
 
 func init() {
 	RootCmd.AddCommand(serverCmd)
-	serverCmd.PersistentFlags().Int("port", 8333, "port")
+	serverCmd.PersistentFlags().
+		StringVarP(&serverHTTPBind, "bind", "b", ":8333", "HTTP address")
+	serverCmd.PersistentFlags().StringSliceVarP(
+		&etcdEndpoints,
+		"endpoints", "e",
+		[]string{},
+		"ETCD endpoints",
+	)
 }

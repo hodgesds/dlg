@@ -1,39 +1,51 @@
-plan:
-  name: test plan
-  executors: 1
-  stages:
-  - name: dhcp4
+name: test
+executors: 1
+stages:
+- name: dhcp4
+  concurrent: false
+  repeat: 5
+  dhcp4:
+    iface: eth0
+    addr:
+    - 0
+    - 0
+    - 94
+    - 0
+    - 83
+    - 1
+- name: dns
+  concurrent: false
+  repeat: 5
+  dns:
+    endpoints:
+    - 127.0.0.1:53
+    resourceRecords: []
+- name: etcd
+  concurrent: false
+  repeat: 5
+  etcd:
+    endpoints:
+    - localhost:1234
+    dialTimeout: 5s
+    kv:
+    - get:
+        key: foo
+- name: http
+  concurrent: false
+  repeat: 5
+  http:
+    count: 0
+    payload:
+      url: http://localhost:8000/
+      header:
+        Content-type:
+        - application/text
+      method: GET
+- name: http children
+  children:
+  - name: http child
     concurrent: false
-    repeat: 5
-    dhcp4:
-      iface: eth0
-      addr:
-      - 0
-      - 0
-      - 94
-      - 0
-      - 83
-      - 1
-  - name: dns
-    concurrent: false
-    repeat: 5
-    dns:
-      endpoints:
-      - 127.0.0.1:53
-      resourceRecords: []
-  - name: etcd
-    concurrent: false
-    repeat: 5
-    etcd:
-      endpoints:
-      - localhost:1234
-      dialTimeout: 5s
-      kv:
-      - get:
-          key: foo
-  - name: http
-    concurrent: false
-    repeat: 5
+    repeat: 0
     http:
       count: 0
       payload:
@@ -42,86 +54,73 @@ plan:
           Content-type:
           - application/text
         method: GET
-  - name: http children
-    children:
-    - name: http child
-      concurrent: false
-      repeat: 0
-      http:
-        count: 0
-        payload:
-          url: http://localhost:8000/
-          header:
-            Content-type:
-            - application/text
-          method: GET
-    concurrent: true
-    repeat: 5
-  - name: kafka
+  concurrent: true
+  repeat: 5
+- name: kafka
+  concurrent: false
+  repeat: 5
+  kafka: {}
+- name: ldap
+  concurrent: false
+  repeat: 5
+  ldap:
+    addr: ""
+    tls: false
+    user: ""
+    pass: ""
+    search: []
+- name: memcache
+  concurrent: false
+  repeat: 5
+  memcache:
+    addrs:
+    - 127.0.0.1:11211
+    ops:
+    - set:
+        key: foo
+        value: baz
+    - get:
+        key: foo
+    - delete:
+        key: bar
+- name: redis
+  concurrent: false
+  repeat: 10
+  redis:
+    network: eth1
+    addr: 127.0.0.1:1234
+    db: 1
+    commands:
+    - clientUnblockWithError: null
+      get:
+        key: foo
+- name: sql
+  concurrent: false
+  repeat: 5
+  sql:
+    mysqlDSN: user:password@/dbname
+    maxConns: 0
+    maxIdleConns: 0
     concurrent: false
-    repeat: 5
-    kafka: {}
-  - name: ldap
-    concurrent: false
-    repeat: 5
-    ldap:
-      addr: ""
-      tls: false
-      user: ""
-      pass: ""
-      search: []
-  - name: memcache
-    concurrent: false
-    repeat: 5
-    memcache:
-      addrs:
-      - 127.0.0.1:11211
-      ops:
-      - set:
-          key: foo
-          value: baz
-      - get:
-          key: foo
-      - delete:
-          key: bar
-  - name: redis
-    concurrent: false
-    repeat: 10
-    redis:
-      network: eth1
-      addr: 127.0.0.1:1234
-      db: 1
-      commands:
-      - clientUnblockWithError: null
-        get:
-          key: foo
-  - name: sql
-    concurrent: false
-    repeat: 5
-    sql:
-      mysqlDSN: user:password@/dbname
-      maxConns: 0
-      maxIdleConns: 0
-      concurrent: false
-      payloads:
-      - exec: Select * from users
-  - name: ssh
-    concurrent: false
-    repeat: 5
-    ssh:
-      addr: 127.0.0.1:22
-      user: root
-      keyFile: /home/foo/.ssh/id_rsa
-      cmd: ls /
-  - name: udp
-    concurrent: false
-    repeat: 5
-    udp:
-      endpoint: ""
-  - name: websocket
-    concurrent: false
-    repeat: 5
-    websocket:
-      url: ""
-      header: {}
-      enablecompression: false
+    payloads:
+    - exec: Select * from users
+- name: ssh
+  concurrent: false
+  repeat: 5
+  ssh:
+    addr: 127.0.0.1:22
+    user: root
+    keyFile: /home/foo/.ssh/id_rsa
+    cmd: ls /
+- name: udp
+  concurrent: false
+  repeat: 5
+  udp:
+    endpoint: ""
+- name: websocket
+  concurrent: false
+  repeat: 5
+  websocket:
+    url: ""
+    header: {}
+    enablecompression: false

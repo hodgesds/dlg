@@ -27,7 +27,7 @@ func TestConfig(t *testing.T) {
 	macAddr, err := net.ParseMAC("00:00:5e:00:53:01")
 	require.NoError(t, err)
 	p := Plan{
-		Name:      "test plan",
+		Name:      "test",
 		Executors: 1,
 		Stages: []*Stage{
 			{
@@ -182,12 +182,9 @@ func TestConfig(t *testing.T) {
 		},
 	}
 	require.NoError(t, p.Validate())
-	c := &Config{
-		Plan: p,
-	}
-	b, err := yaml.Marshal(c)
+	b, err := yaml.Marshal(p)
 	require.NoError(t, err)
-	ioutil.WriteFile("example.yaml", b, 0644)
+	require.NoError(t, ioutil.WriteFile("example.yaml", b, 0644))
 }
 
 func TestMissingStagesError(t *testing.T) {

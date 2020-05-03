@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	ghttp "net/http"
+	"sync"
 	"time"
 
 	"github.com/hodgesds/dlg/config/dhcp4"
@@ -22,6 +23,18 @@ import (
 	"github.com/hodgesds/dlg/config/ssh"
 	"github.com/hodgesds/dlg/config/udp"
 	"github.com/hodgesds/dlg/config/websocket"
+)
+
+// ExecutionState is a execution state
+type ExecutionState int
+
+const (
+	// Waiting is the waiting state.
+	Waiting ExecutionState = iota
+	// Running is when something is running.
+	Running
+	// Complete is when something is complete.
+	Complete
 )
 
 // Config is used for running a load test.
@@ -44,6 +57,9 @@ type Distributed struct {
 
 // Plan is a load testing plan.
 type Plan struct {
+	mu    sync.RWMutex   `yaml:"-"`
+	state ExecutionState `yaml:"-"`
+
 	Name      string   `yaml:"name"`
 	Executors int      `yaml:"executors"`
 	Stages    []*Stage `yaml:"stages"`
@@ -87,6 +103,9 @@ func (p *Plan) Validate() error {
 
 // Stage is a part of a plan.
 type Stage struct {
+	mu    sync.RWMutex
+	state ExecutionState
+
 	Name       string   `yaml:"name"`
 	Tags       []string `yaml:"tags,omitempty"`
 	Children   []*Stage `yaml:"children,omitempty"`
@@ -110,6 +129,20 @@ type Stage struct {
 	SSH       *ssh.Config       `yaml:"ssh,omitempty"`
 	UDP       *udp.Config       `yaml:"udp,omitempty"`
 	Websocket *websocket.Config `yaml:"websocket,omitempty"`
+}
+
+// State returns the ExecutionState of the stage.
+func (s *Stage) State() ExecutionState {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+	return s.state
+}
+
+// SetComplete sets the stage to complete
+func (s *Stage) SetComplete() {
+	s.mu.Lock()
+	s.state = Complete
+	s.mu.Unlock()
 }
 
 func (s *Stage) validateName(names map[string]struct{}) bool {
