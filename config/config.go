@@ -155,6 +155,9 @@ func (s *Stage) Validate() error {
 	if s.Redis != nil {
 		stageTypes++
 	}
+	if s.SNMP != nil {
+		stageTypes++
+	}
 	if s.SQL != nil {
 		stageTypes++
 	}

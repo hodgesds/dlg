@@ -15,7 +15,6 @@
 package cmd
 
 import (
-	"fmt"
 	"log"
 
 	"github.com/hodgesds/dlg/config"
@@ -37,26 +36,15 @@ var etcdCmd = &cobra.Command{
 	Short: "etcd load generator",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
-		plan := &config.Plan{
-			Name: name,
-			Tags: tags,
-		}
-		stage := &config.Stage{
-			Name:     fmt.Sprintf("%s-etcd", name),
-			Tags:     tags,
-			Repeat:   repeat,
-			Children: []*config.Stage{},
-		}
-		if dur > 0 {
-			stage.Duration = &dur
-		}
+		plan := defaultPlan("etcd")
+
 		for _, key := range etcdKeys {
 			kv, err := etcdconf.ParseKV(key)
 			if err != nil {
 				log.Fatal(err)
 			}
-			stage.Children = append(
-				stage.Children,
+			plan.Stages[0].Children = append(
+				plan.Stages[0].Children,
 				&config.Stage{
 					ETCD: &etcdconf.Config{
 						Endpoints: etcdEndpoints,
@@ -64,8 +52,6 @@ var etcdCmd = &cobra.Command{
 					},
 				})
 		}
-
-		plan.Stages = []*config.Stage{stage}
 
 		reg := prometheus.NewPedanticRegistry()
 
