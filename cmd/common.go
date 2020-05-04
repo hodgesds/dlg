@@ -31,7 +31,7 @@ func defaultPlan(planType string) *config.Plan {
 		Name:       fmt.Sprintf("%s-%s", name, planType),
 		Tags:       tags,
 		Repeat:     repeat,
-		Concurrent: true,
+		Concurrent: concurrent,
 		Children:   []*config.Stage{},
 	}
 	if dur > 0 {

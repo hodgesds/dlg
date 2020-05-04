@@ -25,12 +25,13 @@ import (
 )
 
 var (
-	count  int
-	debug  bool
-	dur    time.Duration
-	name   string
-	repeat int
-	tags   = []string{}
+	count      int
+	concurrent int
+	debug      bool
+	dur        time.Duration
+	name       string
+	repeat     int
+	tags       = []string{}
 )
 
 func planFlags() *pflag.FlagSet {
@@ -38,7 +39,8 @@ func planFlags() *pflag.FlagSet {
 	planFlags.BoolVar(&debug, "debug", false, "debug")
 	planFlags.StringVar(&name, "name", "cli", "execution name")
 	planFlags.IntVarP(&repeat, "repeat", "r", 0, "number of times to repeat")
-	planFlags.IntVarP(&count, "count", "c", 100, "number of times to execute")
+	planFlags.IntVarP(&count, "num", "n", 100, "number of times to execute")
+	planFlags.IntVarP(&concurrent, "con", "c", 1, "concurrent executions")
 	planFlags.DurationVarP(&dur, "duration", "d", 0, "execution duration")
 	planFlags.StringSliceVar(&tags, "tags", nil, "metrics tags")
 	return planFlags

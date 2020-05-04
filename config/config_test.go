@@ -78,7 +78,7 @@ func TestConfig(t *testing.T) {
 			{
 				Name:       "http children",
 				Repeat:     5,
-				Concurrent: true,
+				Concurrent: 2,
 				Children: []*Stage{
 					{
 						Name: "http child",

@@ -33,6 +33,8 @@ const (
 	Waiting ExecutionState = iota
 	// Running is when something is running.
 	Running
+	// Paused is when something is paused.
+	Paused
 	// Complete is when something is complete.
 	Complete
 )
@@ -103,13 +105,15 @@ func (p *Plan) Validate() error {
 
 // Stage is a part of a plan.
 type Stage struct {
+	// Internal fields for handling state.
 	mu    sync.RWMutex
 	state ExecutionState
+	start time.Time
 
 	Name       string   `yaml:"name"`
 	Tags       []string `yaml:"tags,omitempty"`
 	Children   []*Stage `yaml:"children,omitempty"`
-	Concurrent bool     `yaml:"concurrent"` // if children should execute concurrent
+	Concurrent int      `yaml:"concurrent"` // if children should execute concurrent
 	Repeat     int      `yaml:"repeat"`     // number of times to repeat the stage
 
 	Duration *time.Duration `yaml:"duration,omitempty"`

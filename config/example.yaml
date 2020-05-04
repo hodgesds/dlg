@@ -2,7 +2,7 @@ name: test
 executors: 1
 stages:
 - name: dhcp4
-  concurrent: false
+  concurrent: 0
   repeat: 5
   dhcp4:
     iface: eth0
@@ -14,14 +14,14 @@ stages:
     - 83
     - 1
 - name: dns
-  concurrent: false
+  concurrent: 0
   repeat: 5
   dns:
     endpoints:
     - 127.0.0.1:53
     resourceRecords: []
 - name: etcd
-  concurrent: false
+  concurrent: 0
   repeat: 5
   etcd:
     endpoints:
@@ -31,7 +31,7 @@ stages:
     - get:
         key: foo
 - name: http
-  concurrent: false
+  concurrent: 0
   repeat: 5
   http:
     count: 0
@@ -44,7 +44,7 @@ stages:
 - name: http children
   children:
   - name: http child
-    concurrent: false
+    concurrent: 0
     repeat: 0
     http:
       count: 0
@@ -54,14 +54,14 @@ stages:
           Content-type:
           - application/text
         method: GET
-  concurrent: true
+  concurrent: 2
   repeat: 5
 - name: kafka
-  concurrent: false
+  concurrent: 0
   repeat: 5
   kafka: {}
 - name: ldap
-  concurrent: false
+  concurrent: 0
   repeat: 5
   ldap:
     addr: ""
@@ -70,7 +70,7 @@ stages:
     pass: ""
     search: []
 - name: memcache
-  concurrent: false
+  concurrent: 0
   repeat: 5
   memcache:
     addrs:
@@ -84,7 +84,7 @@ stages:
     - delete:
         key: bar
 - name: redis
-  concurrent: false
+  concurrent: 0
   repeat: 10
   redis:
     network: eth1
@@ -95,7 +95,7 @@ stages:
       get:
         key: foo
 - name: sql
-  concurrent: false
+  concurrent: 0
   repeat: 5
   sql:
     mysqlDSN: user:password@/dbname
@@ -105,7 +105,7 @@ stages:
     payloads:
     - exec: Select * from users
 - name: ssh
-  concurrent: false
+  concurrent: 0
   repeat: 5
   ssh:
     addr: 127.0.0.1:22
@@ -113,12 +113,12 @@ stages:
     keyFile: /home/foo/.ssh/id_rsa
     cmd: ls /
 - name: udp
-  concurrent: false
+  concurrent: 0
   repeat: 5
   udp:
     endpoint: ""
 - name: websocket
-  concurrent: false
+  concurrent: 0
   repeat: 5
   websocket:
     url: ""

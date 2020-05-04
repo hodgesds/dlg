@@ -254,7 +254,7 @@ func (e *stageExecutor) Execute(ctx context.Context, s *config.Stage) error {
 	}
 
 	// Execute any children.
-	if len(s.Children) > 1 && s.Concurrent {
+	if len(s.Children) > 1 && s.Concurrent > 0 {
 		if err := e.execParallel(exCtx, s.Children); err != nil {
 			return err
 		}
@@ -277,6 +277,23 @@ func (e *stageExecutor) Execute(ctx context.Context, s *config.Stage) error {
 	}
 
 	return nil
+}
+
+// execDuration is used to execute a stage until the context is complete, this
+// is used mainly for duration based tests.
+func (e *stageExecutor) execDuration(ctx context.Context, stage *config.Stage) error {
+	if stage.Duration == nil {
+		return nil
+	}
+	select {
+	// Just check the context to see if it is done, the initial
+	// execution should set the context for the right timeout based
+	// on the duration
+	case <-ctx.Done():
+		return nil
+	default:
+		return e.Execute(ctx, stage)
+	}
 }
 
 func (e *stageExecutor) execParallel(ctx context.Context, stages []*config.Stage) error {
