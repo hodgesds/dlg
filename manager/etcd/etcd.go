@@ -2,7 +2,6 @@ package etcd
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"log"
 	"sync"
@@ -12,6 +11,7 @@ import (
 	etcdconfig "github.com/hodgesds/dlg/config/etcd"
 	"github.com/hodgesds/dlg/executor"
 	"go.etcd.io/etcd/clientv3"
+	"gopkg.in/yaml.v2"
 )
 
 type manager struct {
@@ -80,7 +80,7 @@ func (m *manager) Get(ctx context.Context, name string) (*config.Plan, error) {
 	}
 	for _, kv := range res.Kvs {
 		var p config.Plan
-		if err := json.Unmarshal(kv.Value, &p); err != nil {
+		if err := yaml.Unmarshal(kv.Value, &p); err != nil {
 			return nil, err
 		}
 		return &p, nil
@@ -90,7 +90,7 @@ func (m *manager) Get(ctx context.Context, name string) (*config.Plan, error) {
 
 // Add implements the Manager interface.
 func (m *manager) Add(ctx context.Context, plan *config.Plan) error {
-	b, err := json.Marshal(plan)
+	b, err := yaml.Marshal(plan)
 	if err != nil {
 		return err
 	}
@@ -113,7 +113,7 @@ func (m *manager) Plans(ctx context.Context) ([]*config.Plan, error) {
 	plans := make([]*config.Plan, 0, len(res.Kvs))
 	for _, kv := range res.Kvs {
 		var p config.Plan
-		if err := json.Unmarshal(kv.Value, &p); err != nil {
+		if err := yaml.Unmarshal(kv.Value, &p); err != nil {
 			return nil, err
 		}
 		plans = append(plans, &p)
