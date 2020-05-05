@@ -1,7 +1,8 @@
 name: test
 executors: 1
 stages:
-- name: dhcp4
+- state: 0
+  name: dhcp4
   concurrent: 0
   repeat: 5
   dhcp4:
@@ -13,14 +14,16 @@ stages:
     - 0
     - 83
     - 1
-- name: dns
+- state: 0
+  name: dns
   concurrent: 0
   repeat: 5
   dns:
     endpoints:
     - 127.0.0.1:53
     resourceRecords: []
-- name: etcd
+- state: 0
+  name: etcd
   concurrent: 0
   repeat: 5
   etcd:
@@ -30,7 +33,8 @@ stages:
     kv:
     - get:
         key: foo
-- name: http
+- state: 0
+  name: http
   concurrent: 0
   repeat: 5
   http:
@@ -41,9 +45,11 @@ stages:
         Content-type:
         - application/text
       method: GET
-- name: http children
+- state: 0
+  name: http children
   children:
-  - name: http child
+  - state: 0
+    name: http child
     concurrent: 0
     repeat: 0
     http:
@@ -56,11 +62,13 @@ stages:
         method: GET
   concurrent: 2
   repeat: 5
-- name: kafka
+- state: 0
+  name: kafka
   concurrent: 0
   repeat: 5
   kafka: {}
-- name: ldap
+- state: 0
+  name: ldap
   concurrent: 0
   repeat: 5
   ldap:
@@ -69,7 +77,8 @@ stages:
     user: ""
     pass: ""
     search: []
-- name: memcache
+- state: 0
+  name: memcache
   concurrent: 0
   repeat: 5
   memcache:
@@ -83,7 +92,8 @@ stages:
         key: foo
     - delete:
         key: bar
-- name: redis
+- state: 0
+  name: redis
   concurrent: 0
   repeat: 10
   redis:
@@ -94,7 +104,8 @@ stages:
     - clientUnblockWithError: null
       get:
         key: foo
-- name: sql
+- state: 0
+  name: sql
   concurrent: 0
   repeat: 5
   sql:
@@ -104,7 +115,8 @@ stages:
     concurrent: false
     payloads:
     - exec: Select * from users
-- name: ssh
+- state: 0
+  name: ssh
   concurrent: 0
   repeat: 5
   ssh:
@@ -112,12 +124,14 @@ stages:
     user: root
     keyFile: /home/foo/.ssh/id_rsa
     cmd: ls /
-- name: udp
+- state: 0
+  name: udp
   concurrent: 0
   repeat: 5
   udp:
     endpoint: ""
-- name: websocket
+- state: 0
+  name: websocket
   concurrent: 0
   repeat: 5
   websocket:

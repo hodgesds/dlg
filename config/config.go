@@ -106,9 +106,9 @@ func (p *Plan) Validate() error {
 // Stage is a part of a plan.
 type Stage struct {
 	// Internal fields for handling state.
-	mu    sync.RWMutex
-	state ExecutionState
-	start time.Time
+	mu sync.RWMutex
+
+	State ExecutionState `yaml:"state"`
 
 	Name       string   `yaml:"name"`
 	Tags       []string `yaml:"tags,omitempty"`
@@ -133,20 +133,6 @@ type Stage struct {
 	SSH       *ssh.Config       `yaml:"ssh,omitempty"`
 	UDP       *udp.Config       `yaml:"udp,omitempty"`
 	Websocket *websocket.Config `yaml:"websocket,omitempty"`
-}
-
-// State returns the ExecutionState of the stage.
-func (s *Stage) State() ExecutionState {
-	s.mu.RLock()
-	defer s.mu.RUnlock()
-	return s.state
-}
-
-// SetComplete sets the stage to complete
-func (s *Stage) SetComplete() {
-	s.mu.Lock()
-	s.state = Complete
-	s.mu.Unlock()
 }
 
 func (s *Stage) validateName(names map[string]struct{}) bool {

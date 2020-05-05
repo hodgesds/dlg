@@ -255,13 +255,14 @@ func (e *stageExecutor) Execute(ctx context.Context, s *config.Stage) error {
 
 	// Execute any children.
 	if len(s.Children) > 1 && s.Concurrent > 0 {
-		if err := e.execParallel(exCtx, s.Children); err != nil {
+		if err := e.execParallel(exCtx, s.Concurrent, s.Children); err != nil {
 			return err
 		}
 		if s.Repeat > 0 {
 			s.Repeat--
 			return e.Execute(ctx, s)
 		}
+		return e.execDuration(ctx, s)
 	}
 
 	for _, child := range s.Children {
@@ -270,13 +271,11 @@ func (e *stageExecutor) Execute(ctx context.Context, s *config.Stage) error {
 			return err
 		}
 	}
-
 	if s.Repeat > 0 {
 		s.Repeat--
 		return e.Execute(ctx, s)
 	}
-
-	return nil
+	return e.execDuration(ctx, s)
 }
 
 // execDuration is used to execute a stage until the context is complete, this
@@ -296,25 +295,38 @@ func (e *stageExecutor) execDuration(ctx context.Context, stage *config.Stage) e
 	}
 }
 
-func (e *stageExecutor) execParallel(ctx context.Context, stages []*config.Stage) error {
+func (e *stageExecutor) execParallel(ctx context.Context, concurrent int, stages []*config.Stage) error {
 	var (
-		wg  sync.WaitGroup
-		mu  sync.Mutex
-		err error
+		wg   sync.WaitGroup
+		mu   sync.Mutex
+		err  error
+		stop = make(chan struct{})
+		work = make(chan *config.Stage)
 	)
-	for _, stage := range stages {
-		wg.Add(1)
-		go func(stage *config.Stage) {
-			err2 := e.Execute(ctx, stage)
-			if err2 != nil {
-				e.metrics.ErrorsTotal.With(prometheus.Labels{"stage": stage.Name}).Add(1)
-				mu.Lock()
-				err = multierr.Append(err, err2)
-				mu.Unlock()
+
+	for i := 0; i < concurrent; i++ {
+		go func(work chan *config.Stage) {
+			select {
+			case <-stop:
+				return
+			case stage := <-work:
+				wg.Add(1)
+				err2 := e.Execute(ctx, stage)
+				if err2 != nil {
+					e.metrics.ErrorsTotal.With(prometheus.Labels{"stage": stage.Name}).Add(1)
+					mu.Lock()
+					err = multierr.Append(err, err2)
+					mu.Unlock()
+				}
+				wg.Done()
 			}
-			wg.Done()
-		}(stage)
+		}(work)
+	}
+
+	for _, stage := range stages {
+		work <- stage
 	}
 	wg.Wait()
+	close(work)
 	return err
 }
