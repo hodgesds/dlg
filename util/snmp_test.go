@@ -14,4 +14,8 @@ func TestParseSNMPEndpoint(t *testing.T) {
 
 	_, _, err = ParseSNMPEndpoint("foo")
 	require.Error(t, err)
+
+	_, _, err = ParseSNMPEndpoint("foo:f")
+	require.Error(t, err)
+
 }

@@ -19,6 +19,9 @@ type planExecutor struct {
 
 // NewPlan returns a new Plan executor.
 func NewPlan(p Params, s Stage) (Plan, error) {
+	if p.Registry == nil {
+		p.Registry = prometheus.NewPedanticRegistry()
+	}
 	m, err := newMetrics(p.Registry)
 	if err != nil {
 		return nil, err
