@@ -135,6 +135,9 @@ stages:
   concurrent: 0
   repeat: 5
   websocket:
-    url: ""
+    url: http://127.0.0.1:8888/ws
     header: {}
-    enablecompression: false
+    ops:
+    - read: true
+    - read: false
+      write: foo

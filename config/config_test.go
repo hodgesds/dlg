@@ -175,9 +175,19 @@ func TestConfig(t *testing.T) {
 				UDP:    &udp.Config{},
 			},
 			{
-				Name:      "websocket",
-				Repeat:    5,
-				Websocket: &websocket.Config{},
+				Name:   "websocket",
+				Repeat: 5,
+				Websocket: &websocket.Config{
+					URL: "http://127.0.0.1:8888/ws",
+					Ops: []*websocket.Op{
+						{
+							Read: true,
+						},
+						{
+							Write: "foo",
+						},
+					},
+				},
 			},
 		},
 	}
