@@ -8,7 +8,6 @@ import (
 	"github.com/hodgesds/dlg/config/dns"
 	"github.com/hodgesds/dlg/config/etcd"
 	"github.com/hodgesds/dlg/config/http"
-	"github.com/hodgesds/dlg/config/kafka"
 	"github.com/hodgesds/dlg/config/ldap"
 	"github.com/hodgesds/dlg/config/memcache"
 	"github.com/hodgesds/dlg/config/redis"
@@ -47,11 +46,6 @@ type ETCD interface {
 // HTTP is used for executing HTTP.
 type HTTP interface {
 	Execute(context.Context, *http.Config) error
-}
-
-// Kafka is used for executing Kafka.
-type Kafka interface {
-	Execute(context.Context, *kafka.Config) error
 }
 
 // LDAP is used for executing LDAP.

@@ -63,11 +63,6 @@ stages:
   concurrent: 2
   repeat: 5
 - state: 0
-  name: kafka
-  concurrent: 0
-  repeat: 5
-  kafka: {}
-- state: 0
   name: ldap
   concurrent: 0
   repeat: 5

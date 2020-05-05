@@ -2,7 +2,6 @@ package etcd
 
 import (
 	"context"
-	"fmt"
 
 	etcdconf "github.com/hodgesds/dlg/config/etcd"
 	"github.com/hodgesds/dlg/executor"
@@ -48,11 +47,10 @@ func (e *etcdExecutor) execKv(
 	}
 	if kv.Get != nil {
 		opts := kv.Get.Opts.Opts()
-		v, err := client.Get(ctx, kv.Get.Key, opts...)
+		_, err := client.Get(ctx, kv.Get.Key, opts...)
 		if err != nil {
 			return err
 		}
-		fmt.Printf("%+v\n", v.Kvs)
 	}
 	if kv.Put != nil {
 		opts := kv.Put.Opts.Opts()

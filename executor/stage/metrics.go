@@ -11,7 +11,6 @@ type metrics struct {
 	DNSTotal       *prometheus.CounterVec
 	ETCDTotal      *prometheus.CounterVec
 	HTTPTotal      *prometheus.CounterVec
-	KafkaTotal     *prometheus.CounterVec
 	LDAPTotal      *prometheus.CounterVec
 	MemcacheTotal  *prometheus.CounterVec
 	RedisTotal     *prometheus.CounterVec
@@ -53,12 +52,6 @@ func newMetrics(reg *prometheus.Registry) (*metrics, error) {
 			Subsystem: "stage",
 			Name:      "http_total",
 			Help:      "The total number of HTTP stages.",
-		}, []string{"stage"}),
-		KafkaTotal: prometheus.NewCounterVec(prometheus.CounterOpts{
-			Namespace: "executor",
-			Subsystem: "stage",
-			Name:      "kafka_total",
-			Help:      "The total number of Kafka stages.",
 		}, []string{"stage"}),
 		LDAPTotal: prometheus.NewCounterVec(prometheus.CounterOpts{
 			Namespace: "executor",
@@ -115,7 +108,6 @@ func newMetrics(reg *prometheus.Registry) (*metrics, error) {
 		m.DNSTotal,
 		m.ETCDTotal,
 		m.HTTPTotal,
-		m.KafkaTotal,
 		m.LDAPTotal,
 		m.MemcacheTotal,
 		m.RedisTotal,

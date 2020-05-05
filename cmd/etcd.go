@@ -15,6 +15,7 @@
 package cmd
 
 import (
+	"fmt"
 	"log"
 
 	"github.com/hodgesds/dlg/config"
@@ -38,7 +39,7 @@ var etcdCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		plan := defaultPlan("etcd")
 
-		for _, key := range etcdKeys {
+		for i, key := range etcdKeys {
 			kv, err := etcdconf.ParseKV(key)
 			if err != nil {
 				log.Fatal(err)
@@ -46,6 +47,7 @@ var etcdCmd = &cobra.Command{
 			plan.Stages[0].Children = append(
 				plan.Stages[0].Children,
 				&config.Stage{
+					Name: fmt.Sprintf("etcd-child-%v", i),
 					ETCD: &etcdconf.Config{
 						Endpoints: etcdEndpoints,
 						KV:        []*etcdconf.KV{kv},

@@ -10,7 +10,6 @@ import (
 	"github.com/hodgesds/dlg/config/dns"
 	"github.com/hodgesds/dlg/config/etcd"
 	"github.com/hodgesds/dlg/config/http"
-	"github.com/hodgesds/dlg/config/kafka"
 	"github.com/hodgesds/dlg/config/ldap"
 	"github.com/hodgesds/dlg/config/memcache"
 	"github.com/hodgesds/dlg/config/redis"
@@ -95,11 +94,6 @@ func TestConfig(t *testing.T) {
 						},
 					},
 				},
-			},
-			{
-				Name:   "kafka",
-				Repeat: 5,
-				Kafka:  &kafka.Config{},
 			},
 			{
 				Name:   "ldap",

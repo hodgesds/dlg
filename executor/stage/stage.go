@@ -11,7 +11,6 @@ import (
 	"github.com/hodgesds/dlg/executor/dns"
 	"github.com/hodgesds/dlg/executor/etcd"
 	"github.com/hodgesds/dlg/executor/http"
-	"github.com/hodgesds/dlg/executor/kafka"
 	"github.com/hodgesds/dlg/executor/ldap"
 	"github.com/hodgesds/dlg/executor/memcache"
 	"github.com/hodgesds/dlg/executor/redis"
@@ -37,7 +36,6 @@ type stageExecutor struct {
 	dns       executor.DNS
 	etcd      executor.ETCD
 	http      executor.HTTP
-	kafka     executor.Kafka
 	ldap      executor.LDAP
 	memcache  executor.Memcache
 	redis     executor.Redis
@@ -56,7 +54,6 @@ type Params struct {
 	DNS       executor.DNS
 	ETCD      executor.ETCD
 	HTTP      executor.HTTP
-	Kafka     executor.Kafka
 	LDAP      executor.LDAP
 	Memcache  executor.Memcache
 	Redis     executor.Redis
@@ -79,7 +76,6 @@ func New(p Params) (executor.Stage, error) {
 		dns:       p.DNS,
 		etcd:      p.ETCD,
 		http:      p.HTTP,
-		kafka:     p.Kafka,
 		ldap:      p.LDAP,
 		memcache:  p.Memcache,
 		redis:     p.Redis,
@@ -103,7 +99,6 @@ func Default(reg *prometheus.Registry) (executor.Stage, error) {
 		dns:       dns.New(),
 		etcd:      etcd.New(),
 		http:      http.New(reg),
-		kafka:     kafka.New(),
 		ldap:      ldap.New(),
 		memcache:  memcache.New(),
 		redis:     redis.New(),
@@ -168,15 +163,6 @@ func (e *stageExecutor) Execute(ctx context.Context, s *config.Stage) error {
 		}
 		e.metrics.HTTPTotal.With(prometheus.Labels{"stage": s.Name}).Add(1)
 		if err := e.http.Execute(exCtx, s.HTTP); err != nil {
-			return err
-		}
-	}
-	if s.Kafka != nil {
-		if e.kafka == nil {
-			return ErrNoStageExecutor
-		}
-		e.metrics.KafkaTotal.With(prometheus.Labels{"stage": s.Name}).Add(1)
-		if err := e.kafka.Execute(exCtx, s.Kafka); err != nil {
 			return err
 		}
 	}
@@ -327,6 +313,6 @@ func (e *stageExecutor) execParallel(ctx context.Context, concurrent int, stages
 		work <- stage
 	}
 	wg.Wait()
-	close(work)
+	close(stop)
 	return err
 }

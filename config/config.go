@@ -14,7 +14,6 @@ import (
 	"github.com/hodgesds/dlg/config/dns"
 	"github.com/hodgesds/dlg/config/etcd"
 	"github.com/hodgesds/dlg/config/http"
-	"github.com/hodgesds/dlg/config/kafka"
 	"github.com/hodgesds/dlg/config/ldap"
 	"github.com/hodgesds/dlg/config/memcache"
 	"github.com/hodgesds/dlg/config/redis"
@@ -124,7 +123,6 @@ type Stage struct {
 	DNS       *dns.Config       `yaml:"dns,omitempty"`
 	ETCD      *etcd.Config      `yaml:"etcd,omitempty"`
 	HTTP      *http.Config      `yaml:"http,omitempty"`
-	Kafka     *kafka.Config     `yaml:"kafka,omitempty"`
 	LDAP      *ldap.Config      `yaml:"ldap,omitempty"`
 	Memcache  *memcache.Config  `yaml:"memcache,omitempty"`
 	Redis     *redis.Config     `yaml:"redis,omitempty"`
@@ -164,9 +162,6 @@ func (s *Stage) Validate() error {
 		stageTypes++
 	}
 	if s.HTTP != nil {
-		stageTypes++
-	}
-	if s.Kafka != nil {
 		stageTypes++
 	}
 	if s.LDAP != nil {
