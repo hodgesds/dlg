@@ -7,7 +7,7 @@ import (
 	"os"
 	"strings"
 
-	goftp "github.com/jlaffaye/go-ftp"
+	goftp "github.com/jlaffaye/ftp"
 	"github.com/pkg/sftp"
 	"golang.org/x/crypto/ssh"
 	ftpconfig "github.com/hodgesds/dlg/config/ftp"
