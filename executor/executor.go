@@ -4,12 +4,15 @@ import (
 	"context"
 
 	"github.com/hodgesds/dlg/config"
+	"github.com/hodgesds/dlg/config/cassandra"
 	"github.com/hodgesds/dlg/config/dhcp4"
 	"github.com/hodgesds/dlg/config/dns"
+	"github.com/hodgesds/dlg/config/elasticsearch"
 	"github.com/hodgesds/dlg/config/etcd"
 	"github.com/hodgesds/dlg/config/graphql"
 	"github.com/hodgesds/dlg/config/grpc"
 	"github.com/hodgesds/dlg/config/http"
+	"github.com/hodgesds/dlg/config/influxdb"
 	"github.com/hodgesds/dlg/config/ldap"
 	"github.com/hodgesds/dlg/config/memcache"
 	"github.com/hodgesds/dlg/config/mongodb"
@@ -110,4 +113,19 @@ type MQTT interface {
 // GraphQL is used for executing GraphQL.
 type GraphQL interface {
 	Execute(context.Context, *graphql.Config) error
+}
+
+// Cassandra is used for executing Cassandra.
+type Cassandra interface {
+	Execute(context.Context, *cassandra.Config) error
+}
+
+// Elasticsearch is used for executing Elasticsearch.
+type Elasticsearch interface {
+	Execute(context.Context, *elasticsearch.Config) error
+}
+
+// InfluxDB is used for executing InfluxDB.
+type InfluxDB interface {
+	Execute(context.Context, *influxdb.Config) error
 }

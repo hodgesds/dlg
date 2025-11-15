@@ -10,12 +10,15 @@ import (
 	"sync"
 	"time"
 
+	"github.com/hodgesds/dlg/config/cassandra"
 	"github.com/hodgesds/dlg/config/dhcp4"
 	"github.com/hodgesds/dlg/config/dns"
+	"github.com/hodgesds/dlg/config/elasticsearch"
 	"github.com/hodgesds/dlg/config/etcd"
 	"github.com/hodgesds/dlg/config/graphql"
 	"github.com/hodgesds/dlg/config/grpc"
 	"github.com/hodgesds/dlg/config/http"
+	"github.com/hodgesds/dlg/config/influxdb"
 	"github.com/hodgesds/dlg/config/ldap"
 	"github.com/hodgesds/dlg/config/memcache"
 	"github.com/hodgesds/dlg/config/mongodb"
@@ -123,22 +126,25 @@ type Stage struct {
 	Timeout  *time.Duration `yaml:"timeout,omitempty"`
 
 	// Stage types
-	DHCP4     *dhcp4.Config     `yaml:"dhcp4,omitempty"`
-	DNS       *dns.Config       `yaml:"dns,omitempty"`
-	ETCD      *etcd.Config      `yaml:"etcd,omitempty"`
-	GraphQL   *graphql.Config   `yaml:"graphql,omitempty"`
-	GRPC      *grpc.Config      `yaml:"grpc,omitempty"`
-	HTTP      *http.Config      `yaml:"http,omitempty"`
-	LDAP      *ldap.Config      `yaml:"ldap,omitempty"`
-	Memcache  *memcache.Config  `yaml:"memcache,omitempty"`
-	MongoDB   *mongodb.Config   `yaml:"mongodb,omitempty"`
-	MQTT      *mqtt.Config      `yaml:"mqtt,omitempty"`
-	Redis     *redis.Config     `yaml:"redis,omitempty"`
-	SNMP      *snmp.Config      `yaml:"snmp,omitempty"`
-	SQL       *sql.Config       `yaml:"sql,omitempty"`
-	SSH       *ssh.Config       `yaml:"ssh,omitempty"`
-	UDP       *udp.Config       `yaml:"udp,omitempty"`
-	Websocket *websocket.Config `yaml:"websocket,omitempty"`
+	Cassandra     *cassandra.Config     `yaml:"cassandra,omitempty"`
+	DHCP4         *dhcp4.Config         `yaml:"dhcp4,omitempty"`
+	DNS           *dns.Config           `yaml:"dns,omitempty"`
+	Elasticsearch *elasticsearch.Config `yaml:"elasticsearch,omitempty"`
+	ETCD          *etcd.Config          `yaml:"etcd,omitempty"`
+	GraphQL       *graphql.Config       `yaml:"graphql,omitempty"`
+	GRPC          *grpc.Config          `yaml:"grpc,omitempty"`
+	HTTP          *http.Config          `yaml:"http,omitempty"`
+	InfluxDB      *influxdb.Config      `yaml:"influxdb,omitempty"`
+	LDAP          *ldap.Config          `yaml:"ldap,omitempty"`
+	Memcache      *memcache.Config      `yaml:"memcache,omitempty"`
+	MongoDB       *mongodb.Config       `yaml:"mongodb,omitempty"`
+	MQTT          *mqtt.Config          `yaml:"mqtt,omitempty"`
+	Redis         *redis.Config         `yaml:"redis,omitempty"`
+	SNMP          *snmp.Config          `yaml:"snmp,omitempty"`
+	SQL           *sql.Config           `yaml:"sql,omitempty"`
+	SSH           *ssh.Config           `yaml:"ssh,omitempty"`
+	UDP           *udp.Config           `yaml:"udp,omitempty"`
+	Websocket     *websocket.Config     `yaml:"websocket,omitempty"`
 }
 
 func (s *Stage) validateName(names map[string]struct{}) bool {
@@ -206,6 +212,15 @@ func (s *Stage) Validate() error {
 		stageTypes++
 	}
 	if s.MQTT != nil {
+		stageTypes++
+	}
+	if s.Cassandra != nil {
+		stageTypes++
+	}
+	if s.Elasticsearch != nil {
+		stageTypes++
+	}
+	if s.InfluxDB != nil {
 		stageTypes++
 	}
 	if stageTypes == 0 && len(s.Children) == 0 {

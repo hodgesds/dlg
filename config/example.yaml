@@ -204,3 +204,49 @@ stages:
         Content-Type:
         - application/octet-stream
       bodyHex: "89504e470d0a1a0a"  # PNG file header as hex
+- state: 0
+  name: cassandra
+  concurrent: 0
+  repeat: 5
+  cassandra:
+    hosts:
+    - localhost:9042
+    keyspace: test_keyspace
+    consistency: QUORUM
+    count: 10
+    queries:
+    - cql: "SELECT * FROM users WHERE id = ?"
+      values: [1]
+      scan: true
+    - cql: "INSERT INTO users (id, name, email) VALUES (?, ?, ?)"
+      values: [2, "John Doe", "john@example.com"]
+- state: 0
+  name: elasticsearch
+  concurrent: 0
+  repeat: 5
+  elasticsearch:
+    addresses:
+    - http://localhost:9200
+    index: test-index
+    operation: search
+    count: 10
+    query:
+      match:
+        title: "test"
+- state: 0
+  name: influxdb
+  concurrent: 0
+  repeat: 5
+  influxdb:
+    url: http://localhost:8086
+    token: my-token
+    organization: my-org
+    bucket: my-bucket
+    operation: write
+    count: 10
+    points:
+    - measurement: cpu
+      tags:
+        host: server01
+      fields:
+        usage: 75.5

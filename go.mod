@@ -7,13 +7,16 @@ go 1.21
 require (
 	github.com/ClickHouse/clickhouse-go v1.5.4
 	github.com/eclipse/paho.mqtt.golang v1.4.3
+	github.com/elastic/go-elasticsearch/v8 v8.11.1
 	github.com/gin-gonic/gin v1.9.1
+	github.com/gocql/gocql v1.6.0
 	github.com/go-ldap/ldap/v3 v3.4.6
 	github.com/go-redis/redis/v7 v7.4.1
 	github.com/go-sql-driver/mysql v1.7.1
 	github.com/google/uuid v1.5.0
 	github.com/gorilla/websocket v1.5.1
 	github.com/gosnmp/gosnmp v1.37.0
+	github.com/influxdata/influxdb-client-go/v2 v2.13.0
 	github.com/insomniacslk/dhcp v0.0.0-20231206064809-8c70d406f6d2
 	github.com/jonboulle/clockwork v0.4.0
 	github.com/lib/pq v1.10.9

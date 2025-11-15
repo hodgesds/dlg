@@ -10,6 +10,9 @@ DLG supports the following protocols:
 - **WebSocket** - WebSocket connection testing with read/write operations
 - **GraphQL** - GraphQL query execution with variables and custom headers
 - **MongoDB** - MongoDB database operations (insert, find, update, delete, count, aggregate)
+- **Cassandra** - Cassandra CQL queries with configurable consistency levels
+- **Elasticsearch** - Elasticsearch index, search, and document operations
+- **InfluxDB** - InfluxDB time-series data writes and queries
 - **Redis** - Redis commands and operations
 - **SQL** - MySQL, PostgreSQL, and ClickHouse database testing
 - **MQTT** - MQTT publish/subscribe messaging with QoS levels

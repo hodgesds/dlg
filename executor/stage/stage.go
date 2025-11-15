@@ -7,12 +7,15 @@ import (
 
 	"github.com/hodgesds/dlg/config"
 	"github.com/hodgesds/dlg/executor"
+	"github.com/hodgesds/dlg/executor/cassandra"
 	"github.com/hodgesds/dlg/executor/dhcp4"
 	"github.com/hodgesds/dlg/executor/dns"
+	"github.com/hodgesds/dlg/executor/elasticsearch"
 	"github.com/hodgesds/dlg/executor/etcd"
 	"github.com/hodgesds/dlg/executor/graphql"
 	"github.com/hodgesds/dlg/executor/grpc"
 	"github.com/hodgesds/dlg/executor/http"
+	"github.com/hodgesds/dlg/executor/influxdb"
 	"github.com/hodgesds/dlg/executor/ldap"
 	"github.com/hodgesds/dlg/executor/memcache"
 	"github.com/hodgesds/dlg/executor/mongodb"
@@ -36,44 +39,50 @@ var (
 type stageExecutor struct {
 	metrics *metrics
 
-	dhcp4     executor.DHCP4
-	dns       executor.DNS
-	etcd      executor.ETCD
-	graphql   executor.GraphQL
-	grpc      executor.GRPC
-	http      executor.HTTP
-	ldap      executor.LDAP
-	memcache  executor.Memcache
-	mongodb   executor.MongoDB
-	mqtt      executor.MQTT
-	redis     executor.Redis
-	sql       executor.SQL
-	snmp      executor.SNMP
-	ssh       executor.SSH
-	udp       executor.UDP
-	websocket executor.Websocket
+	cassandra     executor.Cassandra
+	dhcp4         executor.DHCP4
+	dns           executor.DNS
+	elasticsearch executor.Elasticsearch
+	etcd          executor.ETCD
+	graphql       executor.GraphQL
+	grpc          executor.GRPC
+	http          executor.HTTP
+	influxdb      executor.InfluxDB
+	ldap          executor.LDAP
+	memcache      executor.Memcache
+	mongodb       executor.MongoDB
+	mqtt          executor.MQTT
+	redis         executor.Redis
+	sql           executor.SQL
+	snmp          executor.SNMP
+	ssh           executor.SSH
+	udp           executor.UDP
+	websocket     executor.Websocket
 }
 
 // Params is used for configuring a Stage executor.
 type Params struct {
 	Registry *prometheus.Registry
 
-	DHCP4     executor.DHCP4
-	DNS       executor.DNS
-	ETCD      executor.ETCD
-	GraphQL   executor.GraphQL
-	GRPC      executor.GRPC
-	HTTP      executor.HTTP
-	LDAP      executor.LDAP
-	Memcache  executor.Memcache
-	MongoDB   executor.MongoDB
-	MQTT      executor.MQTT
-	Redis     executor.Redis
-	SQL       executor.SQL
-	SNMP      executor.SNMP
-	SSH       executor.SSH
-	UDP       executor.UDP
-	Websocket executor.Websocket
+	Cassandra     executor.Cassandra
+	DHCP4         executor.DHCP4
+	DNS           executor.DNS
+	Elasticsearch executor.Elasticsearch
+	ETCD          executor.ETCD
+	GraphQL       executor.GraphQL
+	GRPC          executor.GRPC
+	HTTP          executor.HTTP
+	InfluxDB      executor.InfluxDB
+	LDAP          executor.LDAP
+	Memcache      executor.Memcache
+	MongoDB       executor.MongoDB
+	MQTT          executor.MQTT
+	Redis         executor.Redis
+	SQL           executor.SQL
+	SNMP          executor.SNMP
+	SSH           executor.SSH
+	UDP           executor.UDP
+	Websocket     executor.Websocket
 }
 
 // New returns a new Stage executor.
@@ -83,23 +92,26 @@ func New(p Params) (executor.Stage, error) {
 		return nil, err
 	}
 	return &stageExecutor{
-		metrics:   metrics,
-		dhcp4:     p.DHCP4,
-		dns:       p.DNS,
-		etcd:      p.ETCD,
-		graphql:   p.GraphQL,
-		grpc:      p.GRPC,
-		http:      p.HTTP,
-		ldap:      p.LDAP,
-		memcache:  p.Memcache,
-		mongodb:   p.MongoDB,
-		mqtt:      p.MQTT,
-		redis:     p.Redis,
-		sql:       p.SQL,
-		snmp:      p.SNMP,
-		ssh:       p.SSH,
-		udp:       p.UDP,
-		websocket: p.Websocket,
+		metrics:       metrics,
+		cassandra:     p.Cassandra,
+		dhcp4:         p.DHCP4,
+		dns:           p.DNS,
+		elasticsearch: p.Elasticsearch,
+		etcd:          p.ETCD,
+		graphql:       p.GraphQL,
+		grpc:          p.GRPC,
+		http:          p.HTTP,
+		influxdb:      p.InfluxDB,
+		ldap:          p.LDAP,
+		memcache:      p.Memcache,
+		mongodb:       p.MongoDB,
+		mqtt:          p.MQTT,
+		redis:         p.Redis,
+		sql:           p.SQL,
+		snmp:          p.SNMP,
+		ssh:           p.SSH,
+		udp:           p.UDP,
+		websocket:     p.Websocket,
 	}, nil
 }
 
@@ -110,23 +122,26 @@ func Default(reg *prometheus.Registry) (executor.Stage, error) {
 		return nil, err
 	}
 	return &stageExecutor{
-		metrics:   metrics,
-		dhcp4:     dhcp4.New(),
-		dns:       dns.New(),
-		etcd:      etcd.New(),
-		graphql:   graphql.New(),
-		grpc:      grpc.New(),
-		http:      http.New(reg),
-		ldap:      ldap.New(),
-		memcache:  memcache.New(),
-		mongodb:   mongodb.New(),
-		mqtt:      mqtt.New(),
-		redis:     redis.New(),
-		sql:       sql.New(),
-		snmp:      snmp.New(),
-		ssh:       ssh.New(),
-		udp:       udp.New(),
-		websocket: websocket.New(),
+		metrics:       metrics,
+		cassandra:     cassandra.New(),
+		dhcp4:         dhcp4.New(),
+		dns:           dns.New(),
+		elasticsearch: elasticsearch.New(),
+		etcd:          etcd.New(),
+		graphql:       graphql.New(),
+		grpc:          grpc.New(),
+		http:          http.New(reg),
+		influxdb:      influxdb.New(),
+		ldap:          ldap.New(),
+		memcache:      memcache.New(),
+		mongodb:       mongodb.New(),
+		mqtt:          mqtt.New(),
+		redis:         redis.New(),
+		sql:           sql.New(),
+		snmp:          snmp.New(),
+		ssh:           ssh.New(),
+		udp:           udp.New(),
+		websocket:     websocket.New(),
 	}, nil
 }
 
@@ -291,6 +306,33 @@ func (e *stageExecutor) Execute(ctx context.Context, s *config.Stage) error {
 		}
 		e.metrics.MQTTTotal.With(prometheus.Labels{"stage": s.Name}).Add(1)
 		if err := e.mqtt.Execute(exCtx, s.MQTT); err != nil {
+			return err
+		}
+	}
+	if s.Cassandra != nil {
+		if e.cassandra == nil {
+			return ErrNoStageExecutor
+		}
+		e.metrics.CassandraTotal.With(prometheus.Labels{"stage": s.Name}).Add(1)
+		if err := e.cassandra.Execute(exCtx, s.Cassandra); err != nil {
+			return err
+		}
+	}
+	if s.Elasticsearch != nil {
+		if e.elasticsearch == nil {
+			return ErrNoStageExecutor
+		}
+		e.metrics.ElasticsearchTotal.With(prometheus.Labels{"stage": s.Name}).Add(1)
+		if err := e.elasticsearch.Execute(exCtx, s.Elasticsearch); err != nil {
+			return err
+		}
+	}
+	if s.InfluxDB != nil {
+		if e.influxdb == nil {
+			return ErrNoStageExecutor
+		}
+		e.metrics.InfluxDBTotal.With(prometheus.Labels{"stage": s.Name}).Add(1)
+		if err := e.influxdb.Execute(exCtx, s.InfluxDB); err != nil {
 			return err
 		}
 	}
