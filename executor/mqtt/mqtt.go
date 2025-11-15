@@ -2,6 +2,8 @@ package mqtt
 
 import (
 	"context"
+	"encoding/base64"
+	"encoding/hex"
 	"fmt"
 	"time"
 
@@ -54,8 +56,22 @@ func (e *mqttExecutor) Execute(ctx context.Context, config *mqttconfig.Config) e
 	}
 	defer client.Disconnect(250)
 
-	// Prepare payload
+	// Prepare payload - priority: Payload > PayloadHex > PayloadBase64 > PayloadString > default
 	payload := config.Payload
+	if len(payload) == 0 && config.PayloadHex != "" {
+		var err error
+		payload, err = hex.DecodeString(config.PayloadHex)
+		if err != nil {
+			return fmt.Errorf("failed to decode hex payload: %w", err)
+		}
+	}
+	if len(payload) == 0 && config.PayloadBase64 != "" {
+		var err error
+		payload, err = base64.StdEncoding.DecodeString(config.PayloadBase64)
+		if err != nil {
+			return fmt.Errorf("failed to decode base64 payload: %w", err)
+		}
+	}
 	if len(payload) == 0 && config.PayloadString != "" {
 		payload = []byte(config.PayloadString)
 	}

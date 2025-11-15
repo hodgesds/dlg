@@ -24,6 +24,8 @@ type Config struct {
 	Count          int            `yaml:"count"`
 	Payload        []byte         `yaml:"payload,omitempty"`
 	PayloadString  string         `yaml:"payloadString,omitempty"`
+	PayloadHex     string         `yaml:"payloadHex,omitempty"`     // Hex-encoded binary payload
+	PayloadBase64  string         `yaml:"payloadBase64,omitempty"`  // Base64-encoded binary payload
 	Retained       bool           `yaml:"retained,omitempty"`
 	CleanSession   bool           `yaml:"cleanSession,omitempty"`
 	ConnectTimeout *time.Duration `yaml:"connectTimeout,omitempty"`

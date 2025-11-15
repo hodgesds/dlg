@@ -180,3 +180,27 @@ stages:
     count: 10
     headers:
       authorization: Bearer token123
+- state: 0
+  name: mqtt-binary-hex
+  concurrent: 0
+  repeat: 3
+  mqtt:
+    broker: tcp://localhost:1883
+    topic: test/binary
+    qos: 1
+    count: 5
+    payloadHex: "deadbeef48656c6c6f"  # Binary payload as hex: \xde\xad\xbe\xef"Hello"
+    cleanSession: true
+- state: 0
+  name: http-binary-payload
+  concurrent: 0
+  repeat: 3
+  http:
+    count: 5
+    payload:
+      url: http://localhost:8000/api/binary
+      method: POST
+      header:
+        Content-Type:
+        - application/octet-stream
+      bodyHex: "89504e470d0a1a0a"  # PNG file header as hex
