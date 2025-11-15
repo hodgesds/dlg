@@ -2,17 +2,19 @@ module github.com/hodgesds/dlg
 
 replace github.com/coreos/bbolt => go.etcd.io/bbolt v1.3.5
 
-go 1.21
+go 1.23.0
+
+toolchain go1.24.7
 
 require (
 	github.com/ClickHouse/clickhouse-go v1.5.4
 	github.com/eclipse/paho.mqtt.golang v1.4.3
 	github.com/elastic/go-elasticsearch/v8 v8.11.1
 	github.com/gin-gonic/gin v1.9.1
-	github.com/gocql/gocql v1.6.0
 	github.com/go-ldap/ldap/v3 v3.4.6
 	github.com/go-redis/redis/v7 v7.4.1
 	github.com/go-sql-driver/mysql v1.7.1
+	github.com/gocql/gocql v1.6.0
 	github.com/google/uuid v1.5.0
 	github.com/gorilla/websocket v1.5.1
 	github.com/gosnmp/gosnmp v1.37.0
@@ -35,4 +37,11 @@ require (
 	golang.org/x/time v0.5.0
 	google.golang.org/grpc v1.60.1
 	gopkg.in/yaml.v2 v2.4.0
+)
+
+require (
+	github.com/google/jsonschema-go v0.3.0 // indirect
+	github.com/modelcontextprotocol/go-sdk v1.1.0 // indirect
+	github.com/yosida95/uritemplate/v3 v3.0.2 // indirect
+	golang.org/x/oauth2 v0.30.0 // indirect
 )
