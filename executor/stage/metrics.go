@@ -6,19 +6,26 @@ import (
 
 // metrics contains metrics.
 type metrics struct {
-	ErrorsTotal    *prometheus.CounterVec
-	DHCP4Total     *prometheus.CounterVec
-	DNSTotal       *prometheus.CounterVec
-	ETCDTotal      *prometheus.CounterVec
-	HTTPTotal      *prometheus.CounterVec
-	LDAPTotal      *prometheus.CounterVec
-	MemcacheTotal  *prometheus.CounterVec
-	RedisTotal     *prometheus.CounterVec
-	SQLTotal       *prometheus.CounterVec
-	SSHTotal       *prometheus.CounterVec
-	SNMPTotal      *prometheus.CounterVec
-	UDPTotal       *prometheus.CounterVec
-	WebsocketTotal *prometheus.CounterVec
+	ErrorsTotal        *prometheus.CounterVec
+	CassandraTotal     *prometheus.CounterVec
+	DHCP4Total         *prometheus.CounterVec
+	DNSTotal           *prometheus.CounterVec
+	ElasticsearchTotal *prometheus.CounterVec
+	ETCDTotal          *prometheus.CounterVec
+	GraphQLTotal       *prometheus.CounterVec
+	GRPCTotal          *prometheus.CounterVec
+	HTTPTotal          *prometheus.CounterVec
+	InfluxDBTotal      *prometheus.CounterVec
+	LDAPTotal          *prometheus.CounterVec
+	MemcacheTotal      *prometheus.CounterVec
+	MongoDBTotal       *prometheus.CounterVec
+	MQTTTotal          *prometheus.CounterVec
+	RedisTotal         *prometheus.CounterVec
+	SQLTotal           *prometheus.CounterVec
+	SSHTotal           *prometheus.CounterVec
+	SNMPTotal          *prometheus.CounterVec
+	UDPTotal           *prometheus.CounterVec
+	WebsocketTotal     *prometheus.CounterVec
 }
 
 func newMetrics(reg *prometheus.Registry) (*metrics, error) {
@@ -101,15 +108,64 @@ func newMetrics(reg *prometheus.Registry) (*metrics, error) {
 			Name:      "websocket_total",
 			Help:      "The total number of Websocket stages.",
 		}, []string{"stage"}),
+		GraphQLTotal: prometheus.NewCounterVec(prometheus.CounterOpts{
+			Namespace: "executor",
+			Subsystem: "stage",
+			Name:      "graphql_total",
+			Help:      "The total number of GraphQL stages.",
+		}, []string{"stage"}),
+		GRPCTotal: prometheus.NewCounterVec(prometheus.CounterOpts{
+			Namespace: "executor",
+			Subsystem: "stage",
+			Name:      "grpc_total",
+			Help:      "The total number of gRPC stages.",
+		}, []string{"stage"}),
+		MongoDBTotal: prometheus.NewCounterVec(prometheus.CounterOpts{
+			Namespace: "executor",
+			Subsystem: "stage",
+			Name:      "mongodb_total",
+			Help:      "The total number of MongoDB stages.",
+		}, []string{"stage"}),
+		MQTTTotal: prometheus.NewCounterVec(prometheus.CounterOpts{
+			Namespace: "executor",
+			Subsystem: "stage",
+			Name:      "mqtt_total",
+			Help:      "The total number of MQTT stages.",
+		}, []string{"stage"}),
+		CassandraTotal: prometheus.NewCounterVec(prometheus.CounterOpts{
+			Namespace: "executor",
+			Subsystem: "stage",
+			Name:      "cassandra_total",
+			Help:      "The total number of Cassandra stages.",
+		}, []string{"stage"}),
+		ElasticsearchTotal: prometheus.NewCounterVec(prometheus.CounterOpts{
+			Namespace: "executor",
+			Subsystem: "stage",
+			Name:      "elasticsearch_total",
+			Help:      "The total number of Elasticsearch stages.",
+		}, []string{"stage"}),
+		InfluxDBTotal: prometheus.NewCounterVec(prometheus.CounterOpts{
+			Namespace: "executor",
+			Subsystem: "stage",
+			Name:      "influxdb_total",
+			Help:      "The total number of InfluxDB stages.",
+		}, []string{"stage"}),
 	}
 	reg.MustRegister(
 		m.ErrorsTotal,
+		m.CassandraTotal,
 		m.DHCP4Total,
 		m.DNSTotal,
+		m.ElasticsearchTotal,
 		m.ETCDTotal,
+		m.GraphQLTotal,
+		m.GRPCTotal,
 		m.HTTPTotal,
+		m.InfluxDBTotal,
 		m.LDAPTotal,
 		m.MemcacheTotal,
+		m.MongoDBTotal,
+		m.MQTTTotal,
 		m.RedisTotal,
 		m.SQLTotal,
 		m.SSHTotal,

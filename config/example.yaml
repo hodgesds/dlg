@@ -136,3 +136,117 @@ stages:
     - read: true
     - read: false
       write: foo
+- state: 0
+  name: grpc
+  concurrent: 0
+  repeat: 5
+  grpc:
+    target: localhost:50051
+    method: /proto.Service/Method
+    count: 10
+    insecure: true
+    metadata:
+      authorization: Bearer token123
+- state: 0
+  name: mongodb
+  concurrent: 0
+  repeat: 5
+  mongodb:
+    uri: mongodb://localhost:27017
+    database: testdb
+    collection: users
+    operation: find
+    count: 10
+    filter:
+      status: active
+- state: 0
+  name: mqtt
+  concurrent: 0
+  repeat: 5
+  mqtt:
+    broker: tcp://localhost:1883
+    topic: test/topic
+    qos: 1
+    count: 10
+    payloadString: "test message"
+    cleanSession: true
+- state: 0
+  name: graphql
+  concurrent: 0
+  repeat: 5
+  graphql:
+    endpoint: http://localhost:4000/graphql
+    query: "query { users { id name email } }"
+    count: 10
+    headers:
+      authorization: Bearer token123
+- state: 0
+  name: mqtt-binary-hex
+  concurrent: 0
+  repeat: 3
+  mqtt:
+    broker: tcp://localhost:1883
+    topic: test/binary
+    qos: 1
+    count: 5
+    payloadHex: "deadbeef48656c6c6f"  # Binary payload as hex: \xde\xad\xbe\xef"Hello"
+    cleanSession: true
+- state: 0
+  name: http-binary-payload
+  concurrent: 0
+  repeat: 3
+  http:
+    count: 5
+    payload:
+      url: http://localhost:8000/api/binary
+      method: POST
+      header:
+        Content-Type:
+        - application/octet-stream
+      bodyHex: "89504e470d0a1a0a"  # PNG file header as hex
+- state: 0
+  name: cassandra
+  concurrent: 0
+  repeat: 5
+  cassandra:
+    hosts:
+    - localhost:9042
+    keyspace: test_keyspace
+    consistency: QUORUM
+    count: 10
+    queries:
+    - cql: "SELECT * FROM users WHERE id = ?"
+      values: [1]
+      scan: true
+    - cql: "INSERT INTO users (id, name, email) VALUES (?, ?, ?)"
+      values: [2, "John Doe", "john@example.com"]
+- state: 0
+  name: elasticsearch
+  concurrent: 0
+  repeat: 5
+  elasticsearch:
+    addresses:
+    - http://localhost:9200
+    index: test-index
+    operation: search
+    count: 10
+    query:
+      match:
+        title: "test"
+- state: 0
+  name: influxdb
+  concurrent: 0
+  repeat: 5
+  influxdb:
+    url: http://localhost:8086
+    token: my-token
+    organization: my-org
+    bucket: my-bucket
+    operation: write
+    count: 10
+    points:
+    - measurement: cpu
+      tags:
+        host: server01
+      fields:
+        usage: 75.5

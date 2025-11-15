@@ -3,6 +3,8 @@ package http
 import (
 	"bytes"
 	"context"
+	"encoding/base64"
+	"encoding/hex"
 	"io/ioutil"
 	ghttp "net/http"
 )
@@ -14,19 +16,40 @@ type Payload struct {
 	Method     string       `yaml:"method"`
 	Body       []byte       `yaml:"body,omitempty"`
 	BodyFile   *string      `yaml:"bodyFile,omitempty"`
-	BodyBase64 string       `yaml:"bodyBase64,omitempty"`
+	BodyHex    string       `yaml:"bodyHex,omitempty"`     // Hex-encoded body
+	BodyBase64 string       `yaml:"bodyBase64,omitempty"`  // Base64-encoded body
 }
 
 // Request returns a new http.Request from a payload config.
 func (p *Payload) Request(ctx context.Context) (*ghttp.Request, error) {
-	if p.BodyFile != nil {
+	// Priority: Body > BodyFile > BodyHex > BodyBase64
+	body := p.Body
+
+	if len(body) == 0 && p.BodyFile != nil {
 		b, err := ioutil.ReadFile(*p.BodyFile)
 		if err != nil {
 			return nil, err
 		}
-		p.Body = b
+		body = b
 	}
-	r, err := ghttp.NewRequest(p.Method, p.URL, bytes.NewReader(p.Body))
+
+	if len(body) == 0 && p.BodyHex != "" {
+		b, err := hex.DecodeString(p.BodyHex)
+		if err != nil {
+			return nil, err
+		}
+		body = b
+	}
+
+	if len(body) == 0 && p.BodyBase64 != "" {
+		b, err := base64.StdEncoding.DecodeString(p.BodyBase64)
+		if err != nil {
+			return nil, err
+		}
+		body = b
+	}
+
+	r, err := ghttp.NewRequest(p.Method, p.URL, bytes.NewReader(body))
 	if err != nil {
 		return nil, err
 	}
