@@ -7,23 +7,38 @@ import (
 // metrics contains metrics.
 type metrics struct {
 	ErrorsTotal        *prometheus.CounterVec
+	ArangoDBTotal      *prometheus.CounterVec
 	CassandraTotal     *prometheus.CounterVec
+	CouchDBTotal       *prometheus.CounterVec
 	DHCP4Total         *prometheus.CounterVec
 	DNSTotal           *prometheus.CounterVec
 	ElasticsearchTotal *prometheus.CounterVec
 	ETCDTotal          *prometheus.CounterVec
+	FTPTotal           *prometheus.CounterVec
 	GraphQLTotal       *prometheus.CounterVec
 	GRPCTotal          *prometheus.CounterVec
 	HTTPTotal          *prometheus.CounterVec
+	ICMPTotal          *prometheus.CounterVec
 	InfluxDBTotal      *prometheus.CounterVec
+	KafkaTotal         *prometheus.CounterVec
 	LDAPTotal          *prometheus.CounterVec
 	MemcacheTotal      *prometheus.CounterVec
 	MongoDBTotal       *prometheus.CounterVec
 	MQTTTotal          *prometheus.CounterVec
+	NATSTotal          *prometheus.CounterVec
+	Neo4jTotal         *prometheus.CounterVec
+	NTPTotal           *prometheus.CounterVec
+	PulsarTotal        *prometheus.CounterVec
+	RabbitMQTotal      *prometheus.CounterVec
 	RedisTotal         *prometheus.CounterVec
+	ScyllaDBTotal      *prometheus.CounterVec
 	SQLTotal           *prometheus.CounterVec
 	SSHTotal           *prometheus.CounterVec
 	SNMPTotal          *prometheus.CounterVec
+	SyslogTotal        *prometheus.CounterVec
+	TCPTotal           *prometheus.CounterVec
+	TelnetTotal        *prometheus.CounterVec
+	TFTPTotal          *prometheus.CounterVec
 	UDPTotal           *prometheus.CounterVec
 	WebsocketTotal     *prometheus.CounterVec
 }
@@ -150,26 +165,131 @@ func newMetrics(reg *prometheus.Registry) (*metrics, error) {
 			Name:      "influxdb_total",
 			Help:      "The total number of InfluxDB stages.",
 		}, []string{"stage"}),
+		KafkaTotal: prometheus.NewCounterVec(prometheus.CounterOpts{
+			Namespace: "executor",
+			Subsystem: "stage",
+			Name:      "kafka_total",
+			Help:      "The total number of Kafka stages.",
+		}, []string{"stage"}),
+		RabbitMQTotal: prometheus.NewCounterVec(prometheus.CounterOpts{
+			Namespace: "executor",
+			Subsystem: "stage",
+			Name:      "rabbitmq_total",
+			Help:      "The total number of RabbitMQ stages.",
+		}, []string{"stage"}),
+		NATSTotal: prometheus.NewCounterVec(prometheus.CounterOpts{
+			Namespace: "executor",
+			Subsystem: "stage",
+			Name:      "nats_total",
+			Help:      "The total number of NATS stages.",
+		}, []string{"stage"}),
+		PulsarTotal: prometheus.NewCounterVec(prometheus.CounterOpts{
+			Namespace: "executor",
+			Subsystem: "stage",
+			Name:      "pulsar_total",
+			Help:      "The total number of Pulsar stages.",
+		}, []string{"stage"}),
+		ScyllaDBTotal: prometheus.NewCounterVec(prometheus.CounterOpts{
+			Namespace: "executor",
+			Subsystem: "stage",
+			Name:      "scylladb_total",
+			Help:      "The total number of ScyllaDB stages.",
+		}, []string{"stage"}),
+		CouchDBTotal: prometheus.NewCounterVec(prometheus.CounterOpts{
+			Namespace: "executor",
+			Subsystem: "stage",
+			Name:      "couchdb_total",
+			Help:      "The total number of CouchDB stages.",
+		}, []string{"stage"}),
+		Neo4jTotal: prometheus.NewCounterVec(prometheus.CounterOpts{
+			Namespace: "executor",
+			Subsystem: "stage",
+			Name:      "neo4j_total",
+			Help:      "The total number of Neo4j stages.",
+		}, []string{"stage"}),
+		ArangoDBTotal: prometheus.NewCounterVec(prometheus.CounterOpts{
+			Namespace: "executor",
+			Subsystem: "stage",
+			Name:      "arangodb_total",
+			Help:      "The total number of ArangoDB stages.",
+		}, []string{"stage"}),
+		FTPTotal: prometheus.NewCounterVec(prometheus.CounterOpts{
+			Namespace: "executor",
+			Subsystem: "stage",
+			Name:      "ftp_total",
+			Help:      "The total number of FTP/SFTP stages.",
+		}, []string{"stage"}),
+		TCPTotal: prometheus.NewCounterVec(prometheus.CounterOpts{
+			Namespace: "executor",
+			Subsystem: "stage",
+			Name:      "tcp_total",
+			Help:      "The total number of TCP stages.",
+		}, []string{"stage"}),
+		ICMPTotal: prometheus.NewCounterVec(prometheus.CounterOpts{
+			Namespace: "executor",
+			Subsystem: "stage",
+			Name:      "icmp_total",
+			Help:      "The total number of ICMP/Ping stages.",
+		}, []string{"stage"}),
+		NTPTotal: prometheus.NewCounterVec(prometheus.CounterOpts{
+			Namespace: "executor",
+			Subsystem: "stage",
+			Name:      "ntp_total",
+			Help:      "The total number of NTP stages.",
+		}, []string{"stage"}),
+		TFTPTotal: prometheus.NewCounterVec(prometheus.CounterOpts{
+			Namespace: "executor",
+			Subsystem: "stage",
+			Name:      "tftp_total",
+			Help:      "The total number of TFTP stages.",
+		}, []string{"stage"}),
+		TelnetTotal: prometheus.NewCounterVec(prometheus.CounterOpts{
+			Namespace: "executor",
+			Subsystem: "stage",
+			Name:      "telnet_total",
+			Help:      "The total number of Telnet stages.",
+		}, []string{"stage"}),
+		SyslogTotal: prometheus.NewCounterVec(prometheus.CounterOpts{
+			Namespace: "executor",
+			Subsystem: "stage",
+			Name:      "syslog_total",
+			Help:      "The total number of Syslog stages.",
+		}, []string{"stage"}),
 	}
 	reg.MustRegister(
 		m.ErrorsTotal,
+		m.ArangoDBTotal,
 		m.CassandraTotal,
+		m.CouchDBTotal,
 		m.DHCP4Total,
 		m.DNSTotal,
 		m.ElasticsearchTotal,
 		m.ETCDTotal,
+		m.FTPTotal,
 		m.GraphQLTotal,
 		m.GRPCTotal,
 		m.HTTPTotal,
+		m.ICMPTotal,
 		m.InfluxDBTotal,
+		m.KafkaTotal,
 		m.LDAPTotal,
 		m.MemcacheTotal,
 		m.MongoDBTotal,
 		m.MQTTTotal,
+		m.NATSTotal,
+		m.Neo4jTotal,
+		m.NTPTotal,
+		m.PulsarTotal,
+		m.RabbitMQTotal,
 		m.RedisTotal,
+		m.ScyllaDBTotal,
 		m.SQLTotal,
 		m.SSHTotal,
 		m.SNMPTotal,
+		m.SyslogTotal,
+		m.TCPTotal,
+		m.TelnetTotal,
+		m.TFTPTotal,
 		m.UDPTotal,
 		m.WebsocketTotal,
 	)
