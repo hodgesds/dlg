@@ -9,6 +9,7 @@ type metrics struct {
 	ErrorsTotal        *prometheus.CounterVec
 	ArangoDBTotal      *prometheus.CounterVec
 	CassandraTotal     *prometheus.CounterVec
+	ClickHouseTotal    *prometheus.CounterVec
 	CouchDBTotal       *prometheus.CounterVec
 	DHCP4Total         *prometheus.CounterVec
 	DNSTotal           *prometheus.CounterVec
@@ -153,6 +154,12 @@ func newMetrics(reg *prometheus.Registry) (*metrics, error) {
 			Name:      "cassandra_total",
 			Help:      "The total number of Cassandra stages.",
 		}, []string{"stage"}),
+		ClickHouseTotal: prometheus.NewCounterVec(prometheus.CounterOpts{
+			Namespace: "executor",
+			Subsystem: "stage",
+			Name:      "clickhouse_total",
+			Help:      "The total number of ClickHouse stages.",
+		}, []string{"stage"}),
 		ElasticsearchTotal: prometheus.NewCounterVec(prometheus.CounterOpts{
 			Namespace: "executor",
 			Subsystem: "stage",
@@ -260,6 +267,7 @@ func newMetrics(reg *prometheus.Registry) (*metrics, error) {
 		m.ErrorsTotal,
 		m.ArangoDBTotal,
 		m.CassandraTotal,
+		m.ClickHouseTotal,
 		m.CouchDBTotal,
 		m.DHCP4Total,
 		m.DNSTotal,

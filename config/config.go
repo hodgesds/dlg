@@ -12,6 +12,7 @@ import (
 
 	"github.com/hodgesds/dlg/config/arangodb"
 	"github.com/hodgesds/dlg/config/cassandra"
+	"github.com/hodgesds/dlg/config/clickhouse"
 	"github.com/hodgesds/dlg/config/couchdb"
 	"github.com/hodgesds/dlg/config/dhcp4"
 	"github.com/hodgesds/dlg/config/dns"
@@ -143,6 +144,7 @@ type Stage struct {
 	// Stage types
 	ArangoDB      *arangodb.Config      `yaml:"arangodb,omitempty"`
 	Cassandra     *cassandra.Config     `yaml:"cassandra,omitempty"`
+	ClickHouse    *clickhouse.Config    `yaml:"clickhouse,omitempty"`
 	CouchDB       *couchdb.Config       `yaml:"couchdb,omitempty"`
 	DHCP4         *dhcp4.Config         `yaml:"dhcp4,omitempty"`
 	DNS           *dns.Config           `yaml:"dns,omitempty"`
@@ -200,6 +202,9 @@ func (s *Stage) Validate() error {
 		stageTypes++
 	}
 	if s.Cassandra != nil {
+		stageTypes++
+	}
+	if s.ClickHouse != nil {
 		stageTypes++
 	}
 	if s.CouchDB != nil {

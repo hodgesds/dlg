@@ -78,6 +78,12 @@ func (s *Server) registerTools() {
 		Description: "Generate MongoDB load against a target database with configurable operations",
 	}, handleMongoDBLoadTest)
 
+	// ClickHouse load test tool
+	mcp.AddTool(s.server, &mcp.Tool{
+		Name:        "clickhouse_load_test",
+		Description: "Generate ClickHouse load against a target database with configurable operations",
+	}, handleClickHouseLoadTest)
+
 	// PostgreSQL load test tool
 	mcp.AddTool(s.server, &mcp.Tool{
 		Name:        "postgres_load_test",
