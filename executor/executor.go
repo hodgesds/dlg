@@ -7,9 +7,13 @@ import (
 	"github.com/hodgesds/dlg/config/dhcp4"
 	"github.com/hodgesds/dlg/config/dns"
 	"github.com/hodgesds/dlg/config/etcd"
+	"github.com/hodgesds/dlg/config/graphql"
+	"github.com/hodgesds/dlg/config/grpc"
 	"github.com/hodgesds/dlg/config/http"
 	"github.com/hodgesds/dlg/config/ldap"
 	"github.com/hodgesds/dlg/config/memcache"
+	"github.com/hodgesds/dlg/config/mongodb"
+	"github.com/hodgesds/dlg/config/mqtt"
 	"github.com/hodgesds/dlg/config/redis"
 	"github.com/hodgesds/dlg/config/snmp"
 	"github.com/hodgesds/dlg/config/sql"
@@ -86,4 +90,24 @@ type UDP interface {
 // Websocket is used for websocket.
 type Websocket interface {
 	Execute(context.Context, *websocket.Config) error
+}
+
+// GRPC is used for executing gRPC.
+type GRPC interface {
+	Execute(context.Context, *grpc.Config) error
+}
+
+// MongoDB is used for executing MongoDB.
+type MongoDB interface {
+	Execute(context.Context, *mongodb.Config) error
+}
+
+// MQTT is used for executing MQTT.
+type MQTT interface {
+	Execute(context.Context, *mqtt.Config) error
+}
+
+// GraphQL is used for executing GraphQL.
+type GraphQL interface {
+	Execute(context.Context, *graphql.Config) error
 }

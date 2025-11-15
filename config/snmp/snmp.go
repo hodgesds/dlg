@@ -1,7 +1,7 @@
 package snmp
 
 import (
-	"github.com/soniah/gosnmp"
+	"github.com/gosnmp/gosnmp"
 )
 
 // Config is used to config SNMP.

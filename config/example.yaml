@@ -136,3 +136,47 @@ stages:
     - read: true
     - read: false
       write: foo
+- state: 0
+  name: grpc
+  concurrent: 0
+  repeat: 5
+  grpc:
+    target: localhost:50051
+    method: /proto.Service/Method
+    count: 10
+    insecure: true
+    metadata:
+      authorization: Bearer token123
+- state: 0
+  name: mongodb
+  concurrent: 0
+  repeat: 5
+  mongodb:
+    uri: mongodb://localhost:27017
+    database: testdb
+    collection: users
+    operation: find
+    count: 10
+    filter:
+      status: active
+- state: 0
+  name: mqtt
+  concurrent: 0
+  repeat: 5
+  mqtt:
+    broker: tcp://localhost:1883
+    topic: test/topic
+    qos: 1
+    count: 10
+    payloadString: "test message"
+    cleanSession: true
+- state: 0
+  name: graphql
+  concurrent: 0
+  repeat: 5
+  graphql:
+    endpoint: http://localhost:4000/graphql
+    query: "query { users { id name email } }"
+    count: 10
+    headers:
+      authorization: Bearer token123

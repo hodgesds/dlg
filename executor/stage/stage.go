@@ -10,9 +10,13 @@ import (
 	"github.com/hodgesds/dlg/executor/dhcp4"
 	"github.com/hodgesds/dlg/executor/dns"
 	"github.com/hodgesds/dlg/executor/etcd"
+	"github.com/hodgesds/dlg/executor/graphql"
+	"github.com/hodgesds/dlg/executor/grpc"
 	"github.com/hodgesds/dlg/executor/http"
 	"github.com/hodgesds/dlg/executor/ldap"
 	"github.com/hodgesds/dlg/executor/memcache"
+	"github.com/hodgesds/dlg/executor/mongodb"
+	"github.com/hodgesds/dlg/executor/mqtt"
 	"github.com/hodgesds/dlg/executor/redis"
 	"github.com/hodgesds/dlg/executor/snmp"
 	"github.com/hodgesds/dlg/executor/sql"
@@ -35,9 +39,13 @@ type stageExecutor struct {
 	dhcp4     executor.DHCP4
 	dns       executor.DNS
 	etcd      executor.ETCD
+	graphql   executor.GraphQL
+	grpc      executor.GRPC
 	http      executor.HTTP
 	ldap      executor.LDAP
 	memcache  executor.Memcache
+	mongodb   executor.MongoDB
+	mqtt      executor.MQTT
 	redis     executor.Redis
 	sql       executor.SQL
 	snmp      executor.SNMP
@@ -53,9 +61,13 @@ type Params struct {
 	DHCP4     executor.DHCP4
 	DNS       executor.DNS
 	ETCD      executor.ETCD
+	GraphQL   executor.GraphQL
+	GRPC      executor.GRPC
 	HTTP      executor.HTTP
 	LDAP      executor.LDAP
 	Memcache  executor.Memcache
+	MongoDB   executor.MongoDB
+	MQTT      executor.MQTT
 	Redis     executor.Redis
 	SQL       executor.SQL
 	SNMP      executor.SNMP
@@ -75,9 +87,13 @@ func New(p Params) (executor.Stage, error) {
 		dhcp4:     p.DHCP4,
 		dns:       p.DNS,
 		etcd:      p.ETCD,
+		graphql:   p.GraphQL,
+		grpc:      p.GRPC,
 		http:      p.HTTP,
 		ldap:      p.LDAP,
 		memcache:  p.Memcache,
+		mongodb:   p.MongoDB,
+		mqtt:      p.MQTT,
 		redis:     p.Redis,
 		sql:       p.SQL,
 		snmp:      p.SNMP,
@@ -98,9 +114,13 @@ func Default(reg *prometheus.Registry) (executor.Stage, error) {
 		dhcp4:     dhcp4.New(),
 		dns:       dns.New(),
 		etcd:      etcd.New(),
+		graphql:   graphql.New(),
+		grpc:      grpc.New(),
 		http:      http.New(reg),
 		ldap:      ldap.New(),
 		memcache:  memcache.New(),
+		mongodb:   mongodb.New(),
+		mqtt:      mqtt.New(),
 		redis:     redis.New(),
 		sql:       sql.New(),
 		snmp:      snmp.New(),
@@ -235,6 +255,42 @@ func (e *stageExecutor) Execute(ctx context.Context, s *config.Stage) error {
 		}
 		e.metrics.WebsocketTotal.With(prometheus.Labels{"stage": s.Name}).Add(1)
 		if err := e.websocket.Execute(exCtx, s.Websocket); err != nil {
+			return err
+		}
+	}
+	if s.GraphQL != nil {
+		if e.graphql == nil {
+			return ErrNoStageExecutor
+		}
+		e.metrics.GraphQLTotal.With(prometheus.Labels{"stage": s.Name}).Add(1)
+		if err := e.graphql.Execute(exCtx, s.GraphQL); err != nil {
+			return err
+		}
+	}
+	if s.GRPC != nil {
+		if e.grpc == nil {
+			return ErrNoStageExecutor
+		}
+		e.metrics.GRPCTotal.With(prometheus.Labels{"stage": s.Name}).Add(1)
+		if err := e.grpc.Execute(exCtx, s.GRPC); err != nil {
+			return err
+		}
+	}
+	if s.MongoDB != nil {
+		if e.mongodb == nil {
+			return ErrNoStageExecutor
+		}
+		e.metrics.MongoDBTotal.With(prometheus.Labels{"stage": s.Name}).Add(1)
+		if err := e.mongodb.Execute(exCtx, s.MongoDB); err != nil {
+			return err
+		}
+	}
+	if s.MQTT != nil {
+		if e.mqtt == nil {
+			return ErrNoStageExecutor
+		}
+		e.metrics.MQTTTotal.With(prometheus.Labels{"stage": s.Name}).Add(1)
+		if err := e.mqtt.Execute(exCtx, s.MQTT); err != nil {
 			return err
 		}
 	}

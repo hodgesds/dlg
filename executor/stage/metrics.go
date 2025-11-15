@@ -10,9 +10,13 @@ type metrics struct {
 	DHCP4Total     *prometheus.CounterVec
 	DNSTotal       *prometheus.CounterVec
 	ETCDTotal      *prometheus.CounterVec
+	GraphQLTotal   *prometheus.CounterVec
+	GRPCTotal      *prometheus.CounterVec
 	HTTPTotal      *prometheus.CounterVec
 	LDAPTotal      *prometheus.CounterVec
 	MemcacheTotal  *prometheus.CounterVec
+	MongoDBTotal   *prometheus.CounterVec
+	MQTTTotal      *prometheus.CounterVec
 	RedisTotal     *prometheus.CounterVec
 	SQLTotal       *prometheus.CounterVec
 	SSHTotal       *prometheus.CounterVec
@@ -101,15 +105,43 @@ func newMetrics(reg *prometheus.Registry) (*metrics, error) {
 			Name:      "websocket_total",
 			Help:      "The total number of Websocket stages.",
 		}, []string{"stage"}),
+		GraphQLTotal: prometheus.NewCounterVec(prometheus.CounterOpts{
+			Namespace: "executor",
+			Subsystem: "stage",
+			Name:      "graphql_total",
+			Help:      "The total number of GraphQL stages.",
+		}, []string{"stage"}),
+		GRPCTotal: prometheus.NewCounterVec(prometheus.CounterOpts{
+			Namespace: "executor",
+			Subsystem: "stage",
+			Name:      "grpc_total",
+			Help:      "The total number of gRPC stages.",
+		}, []string{"stage"}),
+		MongoDBTotal: prometheus.NewCounterVec(prometheus.CounterOpts{
+			Namespace: "executor",
+			Subsystem: "stage",
+			Name:      "mongodb_total",
+			Help:      "The total number of MongoDB stages.",
+		}, []string{"stage"}),
+		MQTTTotal: prometheus.NewCounterVec(prometheus.CounterOpts{
+			Namespace: "executor",
+			Subsystem: "stage",
+			Name:      "mqtt_total",
+			Help:      "The total number of MQTT stages.",
+		}, []string{"stage"}),
 	}
 	reg.MustRegister(
 		m.ErrorsTotal,
 		m.DHCP4Total,
 		m.DNSTotal,
 		m.ETCDTotal,
+		m.GraphQLTotal,
+		m.GRPCTotal,
 		m.HTTPTotal,
 		m.LDAPTotal,
 		m.MemcacheTotal,
+		m.MongoDBTotal,
+		m.MQTTTotal,
 		m.RedisTotal,
 		m.SQLTotal,
 		m.SSHTotal,

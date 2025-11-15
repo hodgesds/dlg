@@ -13,9 +13,13 @@ import (
 	"github.com/hodgesds/dlg/config/dhcp4"
 	"github.com/hodgesds/dlg/config/dns"
 	"github.com/hodgesds/dlg/config/etcd"
+	"github.com/hodgesds/dlg/config/graphql"
+	"github.com/hodgesds/dlg/config/grpc"
 	"github.com/hodgesds/dlg/config/http"
 	"github.com/hodgesds/dlg/config/ldap"
 	"github.com/hodgesds/dlg/config/memcache"
+	"github.com/hodgesds/dlg/config/mongodb"
+	"github.com/hodgesds/dlg/config/mqtt"
 	"github.com/hodgesds/dlg/config/redis"
 	"github.com/hodgesds/dlg/config/snmp"
 	"github.com/hodgesds/dlg/config/sql"
@@ -122,9 +126,13 @@ type Stage struct {
 	DHCP4     *dhcp4.Config     `yaml:"dhcp4,omitempty"`
 	DNS       *dns.Config       `yaml:"dns,omitempty"`
 	ETCD      *etcd.Config      `yaml:"etcd,omitempty"`
+	GraphQL   *graphql.Config   `yaml:"graphql,omitempty"`
+	GRPC      *grpc.Config      `yaml:"grpc,omitempty"`
 	HTTP      *http.Config      `yaml:"http,omitempty"`
 	LDAP      *ldap.Config      `yaml:"ldap,omitempty"`
 	Memcache  *memcache.Config  `yaml:"memcache,omitempty"`
+	MongoDB   *mongodb.Config   `yaml:"mongodb,omitempty"`
+	MQTT      *mqtt.Config      `yaml:"mqtt,omitempty"`
 	Redis     *redis.Config     `yaml:"redis,omitempty"`
 	SNMP      *snmp.Config      `yaml:"snmp,omitempty"`
 	SQL       *sql.Config       `yaml:"sql,omitempty"`
@@ -186,6 +194,18 @@ func (s *Stage) Validate() error {
 		stageTypes++
 	}
 	if s.Websocket != nil {
+		stageTypes++
+	}
+	if s.GraphQL != nil {
+		stageTypes++
+	}
+	if s.GRPC != nil {
+		stageTypes++
+	}
+	if s.MongoDB != nil {
+		stageTypes++
+	}
+	if s.MQTT != nil {
 		stageTypes++
 	}
 	if stageTypes == 0 && len(s.Children) == 0 {
