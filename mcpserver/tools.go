@@ -23,6 +23,7 @@ import (
 	"github.com/hodgesds/dlg/config"
 	"github.com/hodgesds/dlg/config/arangodb"
 	"github.com/hodgesds/dlg/config/cassandra"
+	"github.com/hodgesds/dlg/config/clickhouse"
 	"github.com/hodgesds/dlg/config/couchdb"
 	"github.com/hodgesds/dlg/config/dhcp4"
 	"github.com/hodgesds/dlg/config/dns"
@@ -58,6 +59,7 @@ import (
 	"github.com/hodgesds/dlg/executor"
 	arangodbexec "github.com/hodgesds/dlg/executor/arangodb"
 	cassandraexec "github.com/hodgesds/dlg/executor/cassandra"
+	clickhouseexec "github.com/hodgesds/dlg/executor/clickhouse"
 	couchdbexec "github.com/hodgesds/dlg/executor/couchdb"
 	dhcp4exec "github.com/hodgesds/dlg/executor/dhcp4"
 	dnsexec "github.com/hodgesds/dlg/executor/dns"
@@ -142,6 +144,22 @@ type MongoDBLoadTestInput struct {
 
 // MongoDBLoadTestOutput defines the output of MongoDB load testing
 type MongoDBLoadTestOutput struct {
+	Message string `json:"message" jsonschema:"description=Status message"`
+	Metrics string `json:"metrics" jsonschema:"description=Prometheus metrics from the load test"`
+}
+
+// ClickHouseLoadTestInput defines input parameters for ClickHouse load testing
+type ClickHouseLoadTestInput struct {
+	DSN       string `json:"dsn" jsonschema:"required,description=ClickHouse DSN connection string"`
+	Database  string `json:"database" jsonschema:"required,description=Database name"`
+	Table     string `json:"table" jsonschema:"description=Table name"`
+	Operation string `json:"operation" jsonschema:"description=Operation type (insert, select, batch_insert, count, optimize, create_table)"`
+	Query     string `json:"query" jsonschema:"description=Custom SQL query to execute"`
+	Count     int    `json:"count" jsonschema:"description=Number of operations to perform"`
+}
+
+// ClickHouseLoadTestOutput defines the output of ClickHouse load testing
+type ClickHouseLoadTestOutput struct {
 	Message string `json:"message" jsonschema:"description=Status message"`
 	Metrics string `json:"metrics" jsonschema:"description=Prometheus metrics from the load test"`
 }
@@ -741,6 +759,64 @@ func handleMongoDBLoadTest(ctx context.Context, req *mcp.CallToolRequest, input 
 	output := MongoDBLoadTestOutput{
 		Message: fmt.Sprintf("Successfully executed MongoDB load test: %d %s operations on %s.%s",
 			input.Count, input.Operation, input.Database, input.Collection),
+		Metrics: metrics,
+	}
+
+	return &mcp.CallToolResult{
+		Content: []interface{}{
+			&mcp.TextContent{
+				Type: "text",
+				Text: output.Message,
+			},
+		},
+	}, output, nil
+}
+
+// handleClickHouseLoadTest executes a ClickHouse load test
+func handleClickHouseLoadTest(ctx context.Context, req *mcp.CallToolRequest, input ClickHouseLoadTestInput) (*mcp.CallToolResult, ClickHouseLoadTestOutput, error) {
+	if input.Count == 0 {
+		input.Count = 100
+	}
+	if input.Operation == "" {
+		input.Operation = "select"
+	}
+
+	// Build ClickHouse config
+	clickhouseConf := &clickhouse.Config{
+		DSN:       input.DSN,
+		Database:  input.Database,
+		Table:     input.Table,
+		Operation: clickhouse.Operation(input.Operation),
+		Query:     input.Query,
+		Count:     input.Count,
+	}
+
+	// Create stage
+	stage := &config.Stage{
+		Name:       "clickhouse-load-test",
+		ClickHouse: clickhouseConf,
+	}
+
+	// Create plan
+	plan := &config.Plan{
+		Name:   "mcp-clickhouse-test",
+		Stages: []*config.Stage{stage},
+	}
+
+	// Execute load test
+	metrics, err := executePlan(ctx, plan, func(reg *prometheus.Registry) (executor.Stage, error) {
+		return stageexec.New(stageexec.Params{
+			Registry:   reg,
+			ClickHouse: clickhouseexec.New(),
+		})
+	})
+	if err != nil {
+		return nil, ClickHouseLoadTestOutput{}, fmt.Errorf("failed to execute ClickHouse load test: %w", err)
+	}
+
+	output := ClickHouseLoadTestOutput{
+		Message: fmt.Sprintf("Successfully executed ClickHouse load test: %d %s operations on %s.%s",
+			input.Count, input.Operation, input.Database, input.Table),
 		Metrics: metrics,
 	}
 

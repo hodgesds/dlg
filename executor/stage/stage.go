@@ -9,6 +9,7 @@ import (
 	"github.com/hodgesds/dlg/executor"
 	"github.com/hodgesds/dlg/executor/arangodb"
 	"github.com/hodgesds/dlg/executor/cassandra"
+	"github.com/hodgesds/dlg/executor/clickhouse"
 	"github.com/hodgesds/dlg/executor/couchdb"
 	"github.com/hodgesds/dlg/executor/dhcp4"
 	"github.com/hodgesds/dlg/executor/dns"
@@ -56,6 +57,7 @@ type stageExecutor struct {
 
 	arangodb      executor.ArangoDB
 	cassandra     executor.Cassandra
+	clickhouse    executor.ClickHouse
 	couchdb       executor.CouchDB
 	dhcp4         executor.DHCP4
 	dns           executor.DNS
@@ -96,6 +98,7 @@ type Params struct {
 
 	ArangoDB      executor.ArangoDB
 	Cassandra     executor.Cassandra
+	ClickHouse    executor.ClickHouse
 	CouchDB       executor.CouchDB
 	DHCP4         executor.DHCP4
 	DNS           executor.DNS
@@ -140,6 +143,7 @@ func New(p Params) (executor.Stage, error) {
 		metrics:       metrics,
 		arangodb:      p.ArangoDB,
 		cassandra:     p.Cassandra,
+		clickhouse:    p.ClickHouse,
 		couchdb:       p.CouchDB,
 		dhcp4:         p.DHCP4,
 		dns:           p.DNS,
@@ -185,6 +189,7 @@ func Default(reg *prometheus.Registry) (executor.Stage, error) {
 		metrics:       metrics,
 		arangodb:      arangodb.New(),
 		cassandra:     cassandra.New(),
+		clickhouse:    clickhouse.New(),
 		couchdb:       couchdb.New(),
 		dhcp4:         dhcp4.New(),
 		dns:           dns.New(),
@@ -390,6 +395,15 @@ func (e *stageExecutor) Execute(ctx context.Context, s *config.Stage) error {
 		}
 		e.metrics.CassandraTotal.With(prometheus.Labels{"stage": s.Name}).Add(1)
 		if err := e.cassandra.Execute(exCtx, s.Cassandra); err != nil {
+			return err
+		}
+	}
+	if s.ClickHouse != nil {
+		if e.clickhouse == nil {
+			return ErrNoStageExecutor
+		}
+		e.metrics.ClickHouseTotal.With(prometheus.Labels{"stage": s.Name}).Add(1)
+		if err := e.clickhouse.Execute(exCtx, s.ClickHouse); err != nil {
 			return err
 		}
 	}

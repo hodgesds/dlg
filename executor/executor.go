@@ -6,6 +6,7 @@ import (
 	"github.com/hodgesds/dlg/config"
 	"github.com/hodgesds/dlg/config/arangodb"
 	"github.com/hodgesds/dlg/config/cassandra"
+	"github.com/hodgesds/dlg/config/clickhouse"
 	"github.com/hodgesds/dlg/config/couchdb"
 	"github.com/hodgesds/dlg/config/dhcp4"
 	"github.com/hodgesds/dlg/config/dns"
@@ -218,4 +219,9 @@ type Telnet interface {
 // Syslog is used for executing Syslog.
 type Syslog interface {
 	Execute(context.Context, *syslog.Config) error
+}
+
+// ClickHouse is used for executing ClickHouse.
+type ClickHouse interface {
+	Execute(context.Context, *clickhouse.Config) error
 }
