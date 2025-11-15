@@ -95,4 +95,172 @@ func (s *Server) registerTools() {
 		Name:        "grpc_load_test",
 		Description: "Generate gRPC load against a target service",
 	}, handleGRPCLoadTest)
+
+	// ArangoDB load test tool
+	mcp.AddTool(s.server, &mcp.Tool{
+		Name:        "arangodb_load_test",
+		Description: "Generate ArangoDB load against a target database",
+	}, handleArangoDBLoadTest)
+
+	// Cassandra load test tool
+	mcp.AddTool(s.server, &mcp.Tool{
+		Name:        "cassandra_load_test",
+		Description: "Generate Cassandra load against a target cluster",
+	}, handleCassandraLoadTest)
+
+	// CouchDB load test tool
+	mcp.AddTool(s.server, &mcp.Tool{
+		Name:        "couchdb_load_test",
+		Description: "Generate CouchDB load against a target database",
+	}, handleCouchDBLoadTest)
+
+	// DHCP4 load test tool
+	mcp.AddTool(s.server, &mcp.Tool{
+		Name:        "dhcp4_load_test",
+		Description: "Generate DHCP4 load against a DHCP server",
+	}, handleDHCP4LoadTest)
+
+	// DNS load test tool
+	mcp.AddTool(s.server, &mcp.Tool{
+		Name:        "dns_load_test",
+		Description: "Generate DNS load against a DNS server",
+	}, handleDNSLoadTest)
+
+	// Elasticsearch load test tool
+	mcp.AddTool(s.server, &mcp.Tool{
+		Name:        "elasticsearch_load_test",
+		Description: "Generate Elasticsearch load against a target cluster",
+	}, handleElasticsearchLoadTest)
+
+	// ETCD load test tool
+	mcp.AddTool(s.server, &mcp.Tool{
+		Name:        "etcd_load_test",
+		Description: "Generate ETCD load against a target cluster",
+	}, handleETCDLoadTest)
+
+	// FTP load test tool
+	mcp.AddTool(s.server, &mcp.Tool{
+		Name:        "ftp_load_test",
+		Description: "Generate FTP load against an FTP server",
+	}, handleFTPLoadTest)
+
+	// GraphQL load test tool
+	mcp.AddTool(s.server, &mcp.Tool{
+		Name:        "graphql_load_test",
+		Description: "Generate GraphQL load against a target endpoint",
+	}, handleGraphQLLoadTest)
+
+	// ICMP load test tool
+	mcp.AddTool(s.server, &mcp.Tool{
+		Name:        "icmp_load_test",
+		Description: "Generate ICMP/Ping load against a target host",
+	}, handleICMPLoadTest)
+
+	// InfluxDB load test tool
+	mcp.AddTool(s.server, &mcp.Tool{
+		Name:        "influxdb_load_test",
+		Description: "Generate InfluxDB load against a target database",
+	}, handleInfluxDBLoadTest)
+
+	// Kafka load test tool
+	mcp.AddTool(s.server, &mcp.Tool{
+		Name:        "kafka_load_test",
+		Description: "Generate Kafka load against a target cluster",
+	}, handleKafkaLoadTest)
+
+	// LDAP load test tool
+	mcp.AddTool(s.server, &mcp.Tool{
+		Name:        "ldap_load_test",
+		Description: "Generate LDAP load against a directory server",
+	}, handleLDAPLoadTest)
+
+	// Memcache load test tool
+	mcp.AddTool(s.server, &mcp.Tool{
+		Name:        "memcache_load_test",
+		Description: "Generate Memcache load against a target server",
+	}, handleMemcacheLoadTest)
+
+	// MQTT load test tool
+	mcp.AddTool(s.server, &mcp.Tool{
+		Name:        "mqtt_load_test",
+		Description: "Generate MQTT load against a broker",
+	}, handleMQTTLoadTest)
+
+	// NATS load test tool
+	mcp.AddTool(s.server, &mcp.Tool{
+		Name:        "nats_load_test",
+		Description: "Generate NATS load against a NATS server",
+	}, handleNATSLoadTest)
+
+	// Neo4j load test tool
+	mcp.AddTool(s.server, &mcp.Tool{
+		Name:        "neo4j_load_test",
+		Description: "Generate Neo4j load against a graph database",
+	}, handleNeo4jLoadTest)
+
+	// NTP load test tool
+	mcp.AddTool(s.server, &mcp.Tool{
+		Name:        "ntp_load_test",
+		Description: "Generate NTP load against a time server",
+	}, handleNTPLoadTest)
+
+	// Pulsar load test tool
+	mcp.AddTool(s.server, &mcp.Tool{
+		Name:        "pulsar_load_test",
+		Description: "Generate Apache Pulsar load against a target cluster",
+	}, handlePulsarLoadTest)
+
+	// RabbitMQ load test tool
+	mcp.AddTool(s.server, &mcp.Tool{
+		Name:        "rabbitmq_load_test",
+		Description: "Generate RabbitMQ load against a message broker",
+	}, handleRabbitMQLoadTest)
+
+	// ScyllaDB load test tool
+	mcp.AddTool(s.server, &mcp.Tool{
+		Name:        "scylladb_load_test",
+		Description: "Generate ScyllaDB load against a target cluster",
+	}, handleScyllaDBLoadTest)
+
+	// SNMP load test tool
+	mcp.AddTool(s.server, &mcp.Tool{
+		Name:        "snmp_load_test",
+		Description: "Generate SNMP load against a target device",
+	}, handleSNMPLoadTest)
+
+	// SSH load test tool
+	mcp.AddTool(s.server, &mcp.Tool{
+		Name:        "ssh_load_test",
+		Description: "Generate SSH load against a target server",
+	}, handleSSHLoadTest)
+
+	// Syslog load test tool
+	mcp.AddTool(s.server, &mcp.Tool{
+		Name:        "syslog_load_test",
+		Description: "Generate Syslog load against a syslog server",
+	}, handleSyslogLoadTest)
+
+	// TCP load test tool
+	mcp.AddTool(s.server, &mcp.Tool{
+		Name:        "tcp_load_test",
+		Description: "Generate TCP load against a target server",
+	}, handleTCPLoadTest)
+
+	// Telnet load test tool
+	mcp.AddTool(s.server, &mcp.Tool{
+		Name:        "telnet_load_test",
+		Description: "Generate Telnet load against a target server",
+	}, handleTelnetLoadTest)
+
+	// TFTP load test tool
+	mcp.AddTool(s.server, &mcp.Tool{
+		Name:        "tftp_load_test",
+		Description: "Generate TFTP load against a TFTP server",
+	}, handleTFTPLoadTest)
+
+	// UDP load test tool
+	mcp.AddTool(s.server, &mcp.Tool{
+		Name:        "udp_load_test",
+		Description: "Generate UDP load against a target server",
+	}, handleUDPLoadTest)
 }
