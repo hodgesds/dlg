@@ -7,23 +7,38 @@ import (
 
 	"github.com/hodgesds/dlg/config"
 	"github.com/hodgesds/dlg/executor"
+	"github.com/hodgesds/dlg/executor/arangodb"
 	"github.com/hodgesds/dlg/executor/cassandra"
+	"github.com/hodgesds/dlg/executor/couchdb"
 	"github.com/hodgesds/dlg/executor/dhcp4"
 	"github.com/hodgesds/dlg/executor/dns"
 	"github.com/hodgesds/dlg/executor/elasticsearch"
 	"github.com/hodgesds/dlg/executor/etcd"
+	"github.com/hodgesds/dlg/executor/ftp"
 	"github.com/hodgesds/dlg/executor/graphql"
 	"github.com/hodgesds/dlg/executor/grpc"
 	"github.com/hodgesds/dlg/executor/http"
+	"github.com/hodgesds/dlg/executor/icmp"
 	"github.com/hodgesds/dlg/executor/influxdb"
+	"github.com/hodgesds/dlg/executor/kafka"
 	"github.com/hodgesds/dlg/executor/ldap"
 	"github.com/hodgesds/dlg/executor/memcache"
 	"github.com/hodgesds/dlg/executor/mongodb"
 	"github.com/hodgesds/dlg/executor/mqtt"
+	"github.com/hodgesds/dlg/executor/nats"
+	"github.com/hodgesds/dlg/executor/neo4j"
+	"github.com/hodgesds/dlg/executor/ntp"
+	"github.com/hodgesds/dlg/executor/pulsar"
+	"github.com/hodgesds/dlg/executor/rabbitmq"
 	"github.com/hodgesds/dlg/executor/redis"
+	"github.com/hodgesds/dlg/executor/scylladb"
 	"github.com/hodgesds/dlg/executor/snmp"
 	"github.com/hodgesds/dlg/executor/sql"
 	"github.com/hodgesds/dlg/executor/ssh"
+	"github.com/hodgesds/dlg/executor/syslog"
+	"github.com/hodgesds/dlg/executor/tcp"
+	"github.com/hodgesds/dlg/executor/telnet"
+	"github.com/hodgesds/dlg/executor/tftp"
 	"github.com/hodgesds/dlg/executor/udp"
 	"github.com/hodgesds/dlg/executor/websocket"
 	"github.com/prometheus/client_golang/prometheus"
@@ -39,23 +54,38 @@ var (
 type stageExecutor struct {
 	metrics *metrics
 
+	arangodb      executor.ArangoDB
 	cassandra     executor.Cassandra
+	couchdb       executor.CouchDB
 	dhcp4         executor.DHCP4
 	dns           executor.DNS
 	elasticsearch executor.Elasticsearch
 	etcd          executor.ETCD
+	ftp           executor.FTP
 	graphql       executor.GraphQL
 	grpc          executor.GRPC
 	http          executor.HTTP
+	icmp          executor.ICMP
 	influxdb      executor.InfluxDB
+	kafka         executor.Kafka
 	ldap          executor.LDAP
 	memcache      executor.Memcache
 	mongodb       executor.MongoDB
 	mqtt          executor.MQTT
+	nats          executor.NATS
+	neo4j         executor.Neo4j
+	ntp           executor.NTP
+	pulsar        executor.Pulsar
+	rabbitmq      executor.RabbitMQ
 	redis         executor.Redis
+	scylladb      executor.ScyllaDB
 	sql           executor.SQL
 	snmp          executor.SNMP
 	ssh           executor.SSH
+	syslog        executor.Syslog
+	tcp           executor.TCP
+	telnet        executor.Telnet
+	tftp          executor.TFTP
 	udp           executor.UDP
 	websocket     executor.Websocket
 }
@@ -64,23 +94,38 @@ type stageExecutor struct {
 type Params struct {
 	Registry *prometheus.Registry
 
+	ArangoDB      executor.ArangoDB
 	Cassandra     executor.Cassandra
+	CouchDB       executor.CouchDB
 	DHCP4         executor.DHCP4
 	DNS           executor.DNS
 	Elasticsearch executor.Elasticsearch
 	ETCD          executor.ETCD
+	FTP           executor.FTP
 	GraphQL       executor.GraphQL
 	GRPC          executor.GRPC
 	HTTP          executor.HTTP
+	ICMP          executor.ICMP
 	InfluxDB      executor.InfluxDB
+	Kafka         executor.Kafka
 	LDAP          executor.LDAP
 	Memcache      executor.Memcache
 	MongoDB       executor.MongoDB
 	MQTT          executor.MQTT
+	NATS          executor.NATS
+	Neo4j         executor.Neo4j
+	NTP           executor.NTP
+	Pulsar        executor.Pulsar
+	RabbitMQ      executor.RabbitMQ
 	Redis         executor.Redis
+	ScyllaDB      executor.ScyllaDB
 	SQL           executor.SQL
 	SNMP          executor.SNMP
 	SSH           executor.SSH
+	Syslog        executor.Syslog
+	TCP           executor.TCP
+	Telnet        executor.Telnet
+	TFTP          executor.TFTP
 	UDP           executor.UDP
 	Websocket     executor.Websocket
 }
@@ -93,23 +138,38 @@ func New(p Params) (executor.Stage, error) {
 	}
 	return &stageExecutor{
 		metrics:       metrics,
+		arangodb:      p.ArangoDB,
 		cassandra:     p.Cassandra,
+		couchdb:       p.CouchDB,
 		dhcp4:         p.DHCP4,
 		dns:           p.DNS,
 		elasticsearch: p.Elasticsearch,
 		etcd:          p.ETCD,
+		ftp:           p.FTP,
 		graphql:       p.GraphQL,
 		grpc:          p.GRPC,
 		http:          p.HTTP,
+		icmp:          p.ICMP,
 		influxdb:      p.InfluxDB,
+		kafka:         p.Kafka,
 		ldap:          p.LDAP,
 		memcache:      p.Memcache,
 		mongodb:       p.MongoDB,
 		mqtt:          p.MQTT,
+		nats:          p.NATS,
+		neo4j:         p.Neo4j,
+		ntp:           p.NTP,
+		pulsar:        p.Pulsar,
+		rabbitmq:      p.RabbitMQ,
 		redis:         p.Redis,
+		scylladb:      p.ScyllaDB,
 		sql:           p.SQL,
 		snmp:          p.SNMP,
 		ssh:           p.SSH,
+		syslog:        p.Syslog,
+		tcp:           p.TCP,
+		telnet:        p.Telnet,
+		tftp:          p.TFTP,
 		udp:           p.UDP,
 		websocket:     p.Websocket,
 	}, nil
@@ -123,23 +183,38 @@ func Default(reg *prometheus.Registry) (executor.Stage, error) {
 	}
 	return &stageExecutor{
 		metrics:       metrics,
+		arangodb:      arangodb.New(),
 		cassandra:     cassandra.New(),
+		couchdb:       couchdb.New(),
 		dhcp4:         dhcp4.New(),
 		dns:           dns.New(),
 		elasticsearch: elasticsearch.New(),
 		etcd:          etcd.New(),
+		ftp:           ftp.New(),
 		graphql:       graphql.New(),
 		grpc:          grpc.New(),
 		http:          http.New(reg),
+		icmp:          icmp.New(),
 		influxdb:      influxdb.New(),
+		kafka:         kafka.New(),
 		ldap:          ldap.New(),
 		memcache:      memcache.New(),
 		mongodb:       mongodb.New(),
 		mqtt:          mqtt.New(),
+		nats:          nats.New(),
+		neo4j:         neo4j.New(),
+		ntp:           ntp.New(),
+		pulsar:        pulsar.New(),
+		rabbitmq:      rabbitmq.New(),
 		redis:         redis.New(),
+		scylladb:      scylladb.New(),
 		sql:           sql.New(),
 		snmp:          snmp.New(),
 		ssh:           ssh.New(),
+		syslog:        syslog.New(),
+		tcp:           tcp.New(),
+		telnet:        telnet.New(),
+		tftp:          tftp.New(),
 		udp:           udp.New(),
 		websocket:     websocket.New(),
 	}, nil
@@ -333,6 +408,141 @@ func (e *stageExecutor) Execute(ctx context.Context, s *config.Stage) error {
 		}
 		e.metrics.InfluxDBTotal.With(prometheus.Labels{"stage": s.Name}).Add(1)
 		if err := e.influxdb.Execute(exCtx, s.InfluxDB); err != nil {
+			return err
+		}
+	}
+	if s.Kafka != nil {
+		if e.kafka == nil {
+			return ErrNoStageExecutor
+		}
+		e.metrics.KafkaTotal.With(prometheus.Labels{"stage": s.Name}).Add(1)
+		if err := e.kafka.Execute(exCtx, s.Kafka); err != nil {
+			return err
+		}
+	}
+	if s.RabbitMQ != nil {
+		if e.rabbitmq == nil {
+			return ErrNoStageExecutor
+		}
+		e.metrics.RabbitMQTotal.With(prometheus.Labels{"stage": s.Name}).Add(1)
+		if err := e.rabbitmq.Execute(exCtx, s.RabbitMQ); err != nil {
+			return err
+		}
+	}
+	if s.NATS != nil {
+		if e.nats == nil {
+			return ErrNoStageExecutor
+		}
+		e.metrics.NATSTotal.With(prometheus.Labels{"stage": s.Name}).Add(1)
+		if err := e.nats.Execute(exCtx, s.NATS); err != nil {
+			return err
+		}
+	}
+	if s.Pulsar != nil {
+		if e.pulsar == nil {
+			return ErrNoStageExecutor
+		}
+		e.metrics.PulsarTotal.With(prometheus.Labels{"stage": s.Name}).Add(1)
+		if err := e.pulsar.Execute(exCtx, s.Pulsar); err != nil {
+			return err
+		}
+	}
+	if s.ScyllaDB != nil {
+		if e.scylladb == nil {
+			return ErrNoStageExecutor
+		}
+		e.metrics.ScyllaDBTotal.With(prometheus.Labels{"stage": s.Name}).Add(1)
+		if err := e.scylladb.Execute(exCtx, s.ScyllaDB); err != nil {
+			return err
+		}
+	}
+	if s.CouchDB != nil {
+		if e.couchdb == nil {
+			return ErrNoStageExecutor
+		}
+		e.metrics.CouchDBTotal.With(prometheus.Labels{"stage": s.Name}).Add(1)
+		if err := e.couchdb.Execute(exCtx, s.CouchDB); err != nil {
+			return err
+		}
+	}
+	if s.Neo4j != nil {
+		if e.neo4j == nil {
+			return ErrNoStageExecutor
+		}
+		e.metrics.Neo4jTotal.With(prometheus.Labels{"stage": s.Name}).Add(1)
+		if err := e.neo4j.Execute(exCtx, s.Neo4j); err != nil {
+			return err
+		}
+	}
+	if s.ArangoDB != nil {
+		if e.arangodb == nil {
+			return ErrNoStageExecutor
+		}
+		e.metrics.ArangoDBTotal.With(prometheus.Labels{"stage": s.Name}).Add(1)
+		if err := e.arangodb.Execute(exCtx, s.ArangoDB); err != nil {
+			return err
+		}
+	}
+	if s.FTP != nil {
+		if e.ftp == nil {
+			return ErrNoStageExecutor
+		}
+		e.metrics.FTPTotal.With(prometheus.Labels{"stage": s.Name}).Add(1)
+		if err := e.ftp.Execute(exCtx, s.FTP); err != nil {
+			return err
+		}
+	}
+	if s.TCP != nil {
+		if e.tcp == nil {
+			return ErrNoStageExecutor
+		}
+		e.metrics.TCPTotal.With(prometheus.Labels{"stage": s.Name}).Add(1)
+		if err := e.tcp.Execute(exCtx, s.TCP); err != nil {
+			return err
+		}
+	}
+	if s.ICMP != nil {
+		if e.icmp == nil {
+			return ErrNoStageExecutor
+		}
+		e.metrics.ICMPTotal.With(prometheus.Labels{"stage": s.Name}).Add(1)
+		if err := e.icmp.Execute(exCtx, s.ICMP); err != nil {
+			return err
+		}
+	}
+	if s.NTP != nil {
+		if e.ntp == nil {
+			return ErrNoStageExecutor
+		}
+		e.metrics.NTPTotal.With(prometheus.Labels{"stage": s.Name}).Add(1)
+		if err := e.ntp.Execute(exCtx, s.NTP); err != nil {
+			return err
+		}
+	}
+	if s.TFTP != nil {
+		if e.tftp == nil {
+			return ErrNoStageExecutor
+		}
+		e.metrics.TFTPTotal.With(prometheus.Labels{"stage": s.Name}).Add(1)
+		if err := e.tftp.Execute(exCtx, s.TFTP); err != nil {
+			return err
+		}
+	}
+	if s.Telnet != nil {
+		if e.telnet == nil {
+			return ErrNoStageExecutor
+		}
+		e.metrics.TelnetTotal.With(prometheus.Labels{"stage": s.Name}).Add(1)
+		if err := e.telnet.Execute(exCtx, s.Telnet); err != nil {
+			return err
+		}
+	}
+	if s.Syslog != nil {
+		if e.syslog == nil {
+			return ErrNoStageExecutor
+		}
+		e.metrics.SyslogTotal.With(prometheus.Labels{"stage": s.Name}).Add(1)
+		if err := e.syslog.Execute(exCtx, s.Syslog); err != nil {
 			return err
 		}
 	}

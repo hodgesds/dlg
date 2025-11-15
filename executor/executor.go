@@ -4,23 +4,38 @@ import (
 	"context"
 
 	"github.com/hodgesds/dlg/config"
+	"github.com/hodgesds/dlg/config/arangodb"
 	"github.com/hodgesds/dlg/config/cassandra"
+	"github.com/hodgesds/dlg/config/couchdb"
 	"github.com/hodgesds/dlg/config/dhcp4"
 	"github.com/hodgesds/dlg/config/dns"
 	"github.com/hodgesds/dlg/config/elasticsearch"
 	"github.com/hodgesds/dlg/config/etcd"
+	"github.com/hodgesds/dlg/config/ftp"
 	"github.com/hodgesds/dlg/config/graphql"
 	"github.com/hodgesds/dlg/config/grpc"
 	"github.com/hodgesds/dlg/config/http"
+	"github.com/hodgesds/dlg/config/icmp"
 	"github.com/hodgesds/dlg/config/influxdb"
+	"github.com/hodgesds/dlg/config/kafka"
 	"github.com/hodgesds/dlg/config/ldap"
 	"github.com/hodgesds/dlg/config/memcache"
 	"github.com/hodgesds/dlg/config/mongodb"
 	"github.com/hodgesds/dlg/config/mqtt"
+	"github.com/hodgesds/dlg/config/nats"
+	"github.com/hodgesds/dlg/config/neo4j"
+	"github.com/hodgesds/dlg/config/ntp"
+	"github.com/hodgesds/dlg/config/pulsar"
+	"github.com/hodgesds/dlg/config/rabbitmq"
 	"github.com/hodgesds/dlg/config/redis"
+	"github.com/hodgesds/dlg/config/scylladb"
 	"github.com/hodgesds/dlg/config/snmp"
 	"github.com/hodgesds/dlg/config/sql"
 	"github.com/hodgesds/dlg/config/ssh"
+	"github.com/hodgesds/dlg/config/syslog"
+	"github.com/hodgesds/dlg/config/tcp"
+	"github.com/hodgesds/dlg/config/telnet"
+	"github.com/hodgesds/dlg/config/tftp"
 	"github.com/hodgesds/dlg/config/udp"
 	"github.com/hodgesds/dlg/config/websocket"
 )
@@ -128,4 +143,79 @@ type Elasticsearch interface {
 // InfluxDB is used for executing InfluxDB.
 type InfluxDB interface {
 	Execute(context.Context, *influxdb.Config) error
+}
+
+// Kafka is used for executing Kafka.
+type Kafka interface {
+	Execute(context.Context, *kafka.Config) error
+}
+
+// RabbitMQ is used for executing RabbitMQ.
+type RabbitMQ interface {
+	Execute(context.Context, *rabbitmq.Config) error
+}
+
+// NATS is used for executing NATS.
+type NATS interface {
+	Execute(context.Context, *nats.Config) error
+}
+
+// Pulsar is used for executing Apache Pulsar.
+type Pulsar interface {
+	Execute(context.Context, *pulsar.Config) error
+}
+
+// ScyllaDB is used for executing ScyllaDB.
+type ScyllaDB interface {
+	Execute(context.Context, *scylladb.Config) error
+}
+
+// CouchDB is used for executing CouchDB.
+type CouchDB interface {
+	Execute(context.Context, *couchdb.Config) error
+}
+
+// Neo4j is used for executing Neo4j.
+type Neo4j interface {
+	Execute(context.Context, *neo4j.Config) error
+}
+
+// ArangoDB is used for executing ArangoDB.
+type ArangoDB interface {
+	Execute(context.Context, *arangodb.Config) error
+}
+
+// FTP is used for executing FTP/SFTP.
+type FTP interface {
+	Execute(context.Context, *ftp.Config) error
+}
+
+// TCP is used for executing TCP.
+type TCP interface {
+	Execute(context.Context, *tcp.Config) error
+}
+
+// ICMP is used for executing ICMP/Ping.
+type ICMP interface {
+	Execute(context.Context, *icmp.Config) error
+}
+
+// NTP is used for executing NTP.
+type NTP interface {
+	Execute(context.Context, *ntp.Config) error
+}
+
+// TFTP is used for executing TFTP.
+type TFTP interface {
+	Execute(context.Context, *tftp.Config) error
+}
+
+// Telnet is used for executing Telnet.
+type Telnet interface {
+	Execute(context.Context, *telnet.Config) error
+}
+
+// Syslog is used for executing Syslog.
+type Syslog interface {
+	Execute(context.Context, *syslog.Config) error
 }
